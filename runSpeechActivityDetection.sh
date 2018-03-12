@@ -43,3 +43,27 @@ done
 echo "detecting speech and non speech segments"
 python SSSF/code/predict/1-confidence-vm5.py $audio_dir
 echo "finished detecting speech and non speech segments"
+
+# take all the .rttm in /vagrant/data/hyp and move them to /vagrant/data - move features and hyp to another folder also.
+for sad in `ls $audio_dir/hyp/*.lab`; do
+    _lab=`basename $sad`
+    lab=/vagrant/data/opensat_sad_$_lab
+    mv $sad $lab
+done
+
+if [ ! -d "/vagrant/temp" ]; then
+    mkdir -p /vagrant/temp
+fi
+
+if [! -d "/vagrant/temp/hyp_sum" ]; then
+    mv /vagrant/data/hyp_sum /vagrant/temp
+else
+    echo "can't move hyp_sum/ folder to temp/ because temp is already full"
+fi
+
+if [! -d "/vagrant/temp/features" ]; then
+    mv /vagrant/data/features /vagrant/temp
+else
+    echo "can't move features/ folder to temp/ because temp is already full"
+fi
+
