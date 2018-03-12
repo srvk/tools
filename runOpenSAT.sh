@@ -23,11 +23,6 @@ basename="${filename%.*}"
 # this is set in user's login .bashrc
 #export PATH=/home/${user}/anaconda/bin:$PATH
 
-if [ $# -ne 1 ]; then
-  echo "Usage: runOpenSAT.sh <audiofile>"
-  exit 1;
-fi
-
 # let's get our bearings: set CWD to the path of OpenSAT
 cd $OPENSATDIR
 

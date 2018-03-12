@@ -24,13 +24,8 @@ basename="${filename%.*}"
 # this is set in user's login .bashrc
 #export PATH=/home/${user}/anaconda/bin:$PATH
 
-if [ $# -ne 1 ]; then
-  echo "Usage: runOpenSAT.sh <audiofile>"
-  exit 1;
-fi
-
 # let's get our bearings: set CWD to path of OpenSAT
-cd $OpenSAT
+cd $OPENSATDIR
 
 # make output folder for features, below input folder
 mkdir -p $audio_dir/feature
@@ -44,7 +39,7 @@ done
 $conda_dir/python SSSF/code/predict/1-confidence-vm3.py $audio_dir
 
 # take all the .rttm in /vagrant/data/hyp and move them to /vagrant/data - move features and hyp to another folder also.
-for sad in `ls $audio_dir/hyp_sum/*.rttm`; do
+for sad in `ls $audio_dir/hyp/*.rttm`; do
     _rttm=`basename $sad`
     rttm=/vagrant/data/opensat_sad_$_rttm
     mv $sad $rttm
@@ -54,13 +49,13 @@ if [ ! -d "/vagrant/diarNoisemes_temp" ]; then
     mkdir -p /vagrant/diarNoisemes_temp
 fi
 
-if [! -d "/vagrant/temp/hyp_sum" ]; then
-    mv /vagrant/data/hyp_sum /vagrant/diarNoisemes_temp
+if [ ! -d "/vagrant/diarNoisemes_temp/hyp" ]; then
+    mv /vagrant/data/hyp /vagrant/diarNoisemes_temp
 else
     echo "can't move hyp_sum/ folder to diarNoisemes_temp/ because diarNoisemes_temp is already full"
 fi
 
-if [! -d "/vagrant/temp/feature" ]; then
+if [ ! -d "/vagrant/diarNoisemes_temp/feature" ]; then
     mv /vagrant/data/feature /vagrant/diarNoisemes_temp
 else
     echo "can't move feature/ folder to diarNoisemes_temp/ because diarNoisemes_temp is already full"

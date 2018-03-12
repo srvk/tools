@@ -54,13 +54,13 @@ if [ ! -d "/vagrant/SAD_temp" ]; then
     mkdir -p /vagrant/SAD_temp
 fi
 
-if [ ! -d "/vagrant/temp/hyp_sum" ]; then
+if [ ! -d "/vagrant/SAD_temp/hyp_sum" ]; then
     mv /vagrant/data/hyp_sum /vagrant/SAD_temp
 else
     echo "can't move hyp_sum/ folder to SAD_temp/ because SAD_temp is already full"
 fi
 
-if [ ! -d "/vagrant/temp/feature" ]; then
+if [ ! -d "/vagrant/SAD_temp/feature" ]; then
     mv /vagrant/data/feature /vagrant/SAD_temp
 else
     echo "can't move feature/ folder to SAD_temp/ because SAD_temp is already full"
