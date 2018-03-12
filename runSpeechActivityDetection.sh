@@ -4,6 +4,7 @@
 # the .bashrc which is not necessarily sourced!
 source ~/.bashrc
 conda_dir=/home/vagrant/anaconda/bin
+
 # run OpenSAT with hard coded models & configs found here and in /vagrant
 # assumes Python environment in /home/${user}/
 # usage: runDiarNoisemes.sh <folder containing .wav files to process>
@@ -49,19 +50,19 @@ for sad in `ls $audio_dir/hyp_sum/*.lab`; do
     mv $sad $lab
 done
 
-if [ ! -d "/vagrant/temp" ]; then
-    mkdir -p /vagrant/temp
+if [ ! -d "/vagrant/SAD_temp" ]; then
+    mkdir -p /vagrant/SAD_temp
 fi
 
 if [ ! -d "/vagrant/temp/hyp_sum" ]; then
-    mv /vagrant/data/hyp_sum /vagrant/temp
+    mv /vagrant/data/hyp_sum /vagrant/SAD_temp
 else
-    echo "can't move hyp_sum/ folder to temp/ because temp is already full"
+    echo "can't move hyp_sum/ folder to SAD_temp/ because SAD_temp is already full"
 fi
 
 if [ ! -d "/vagrant/temp/feature" ]; then
-    mv /vagrant/data/feature /vagrant/temp
+    mv /vagrant/data/feature /vagrant/SAD_temp
 else
-    echo "can't move feature/ folder to temp/ because temp is already full"
+    echo "can't move feature/ folder to SAD_temp/ because SAD_temp is already full"
 fi
 

@@ -1,5 +1,8 @@
 #!/bin/bash
-# runDiarNoisemes.sh
+# Since the script is built to be launched outside of the vm, source
+# the .bashrc which is not necessarily sourced!
+source ~/.bashrc
+conda_dir=/home/vagrant/anaconda/bin
 
 # run OpenSAT with hard coded models & configs found here and in /vagrant
 # assumes Python environment in /home/${user}/
@@ -38,28 +41,28 @@ for file in `ls $audio_dir/*.wav`; do
 done
 
 # then confidences
-python SSSF/code/predict/1-confidence-vm3.py $audio_dir
+$conda_dir/python SSSF/code/predict/1-confidence-vm3.py $audio_dir
 
 # take all the .rttm in /vagrant/data/hyp and move them to /vagrant/data - move features and hyp to another folder also.
-for sad in `ls $audio_dir/hyp/*.lab`; do
-    _lab=`basename $sad`
-    lab=/vagrant/data/opensat_sad_$_lab
-    mv $sad $lab
+for sad in `ls $audio_dir/hyp_sum/*.rttm`; do
+    _rttm=`basename $sad`
+    rttm=/vagrant/data/opensat_sad_$_rttm
+    mv $sad $rttm
 done
 
-if [ ! -d "/vagrant/temp" ]; then
-    mkdir -p /vagrant/temp
+if [ ! -d "/vagrant/diarNoisemes_temp" ]; then
+    mkdir -p /vagrant/diarNoisemes_temp
 fi
 
 if [! -d "/vagrant/temp/hyp_sum" ]; then
-    mv /vagrant/data/hyp_sum /vagrant/temp
+    mv /vagrant/data/hyp_sum /vagrant/diarNoisemes_temp
 else
-    echo "can't move hyp_sum/ folder to temp/ because temp is already full"
+    echo "can't move hyp_sum/ folder to diarNoisemes_temp/ because diarNoisemes_temp is already full"
 fi
 
-if [! -d "/vagrant/temp/features" ]; then
-    mv /vagrant/data/features /vagrant/temp
+if [! -d "/vagrant/temp/feature" ]; then
+    mv /vagrant/data/feature /vagrant/diarNoisemes_temp
 else
-    echo "can't move features/ folder to temp/ because temp is already full"
+    echo "can't move feature/ folder to diarNoisemes_temp/ because diarNoisemes_temp is already full"
 fi
 
