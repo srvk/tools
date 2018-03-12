@@ -1,6 +1,9 @@
 #!/bin/bash
 # runDiarNoisemes.sh
-
+# Since the script is built to be launched outside of the vm, source
+# the .bashrc which is not necessarily sourced!
+source ~/.bashrc
+conda_dir=/home/vagrant/anaconda/bin
 # run OpenSAT with hard coded models & configs found here and in /vagrant
 # assumes Python environment in /home/${user}/
 # usage: runDiarNoisemes.sh <folder containing .wav files to process>
@@ -21,11 +24,6 @@ basename="${filename%.*}"
 # this is set in user's login .bashrc
 #export PATH=/home/${user}/anaconda/bin:$PATH
 
-if [ $# -ne 1 ]; then
-  echo "Usage: runOpenSAT.sh <audiofile>"
-  exit 1;
-fi
-
 # let's get our bearings: set CWD to path of OpenSAT
 cd $OPENSATDIR
 
@@ -41,11 +39,11 @@ done
 # then confidences
 #python SSSF/code/predict/1-confidence-vm3.py $1
 echo "detecting speech and non speech segments"
-python SSSF/code/predict/1-confidence-vm5.py $audio_dir
+$conda_dir/python SSSF/code/predict/1-confidence-vm5.py $audio_dir
 echo "finished detecting speech and non speech segments"
 
 # take all the .rttm in /vagrant/data/hyp and move them to /vagrant/data - move features and hyp to another folder also.
-for sad in `ls $audio_dir/hyp/*.lab`; do
+for sad in `ls $audio_dir/hyp_sum/*.lab`; do
     _lab=`basename $sad`
     lab=/vagrant/data/opensat_sad_$_lab
     mv $sad $lab
@@ -55,15 +53,15 @@ if [ ! -d "/vagrant/temp" ]; then
     mkdir -p /vagrant/temp
 fi
 
-if [! -d "/vagrant/temp/hyp_sum" ]; then
+if [ ! -d "/vagrant/temp/hyp_sum" ]; then
     mv /vagrant/data/hyp_sum /vagrant/temp
 else
     echo "can't move hyp_sum/ folder to temp/ because temp is already full"
 fi
 
-if [! -d "/vagrant/temp/features" ]; then
-    mv /vagrant/data/features /vagrant/temp
+if [ ! -d "/vagrant/temp/feature" ]; then
+    mv /vagrant/data/feature /vagrant/temp
 else
-    echo "can't move features/ folder to temp/ because temp is already full"
+    echo "can't move feature/ folder to temp/ because temp is already full"
 fi
 
