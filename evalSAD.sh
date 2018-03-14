@@ -79,13 +79,18 @@ fi
 #
 echo "evaluating"
 #$conda_dir/python score_batch.py /vagrant/data/${sys_name}_eval.df /vagrant/temp_ref /vagrant/temp_sys
+# create /vagrant/results if it doesn't exist
+if [[ ! -d /vagrant/results ]]; then
+    mkdir -p /vagrant/results
+fi
+results=/vagrant/results
 echo "filename	DCF	FA	MISS" > /vagrant/${sys_name}_eval.df
 for lab in `ls /vagrant/temp_sys/*.lab`; do
     base=$(basename $lab .lab)
-    python score.py /vagrant/temp_ref $lab | awk -v var="$base" -F" " '{if ($1=="DCF:") {print var"	"$2"	"$4"	"$6}}' >> /vagrant/${sys_name}_eval.df
+    python score.py /vagrant/temp_ref $lab | awk -v var="$base" -F" " '{if ($1=="DCF:") {print var"	"$2"	"$4"	"$6}}' >> $results/${sys_name}_eval.df
 done
 # small detail: remove the commas from the output
-sed -i "s/,//g" /vagrant/${sys_name}_eval.df
+sed -i "s/,//g" $results/${sys_name}_eval.df
 echo "done evaluating, check ${sys_name}_eval.df for the results"
 # remove temps
 rm -rf /vagrant/temp_ref /vagrant/temp_sys
