@@ -51,11 +51,11 @@ echo "finished detecting speech and non speech segments"
 
 # take all the .rttm in /vagrant/data/hyp and move them to /vagrant/data - move features and hyp to another folder also.
 for sad in `ls $audio_dir/hyp_sum/*.lab`; do
-    _lab=`basename $sad`
-    lab=/vagrant/data/opensat_sad_$_lab
-    mv $sad $lab
+    rttm_out=noisemes_sad_$(basename $sad .lab)
+    grep ' speech' $sad | awk -v fname=$base '{print "SPEAKER" "\t" fname "\t" 1  "\t" $1  "\t" $2-$1 "\t" "<NA>" "\t" "<NA>"  "\t" $3  "\t"  "<NA>"}'   > $audio_dir/$rttm_out
 done
 
+# mv hyp and features folders to a temp that the user can delete.
 if [ ! -d "/vagrant/SAD_temp" ]; then
     mkdir -p /vagrant/SAD_temp
 fi
