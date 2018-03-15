@@ -11,19 +11,21 @@ BASEDIR=`dirname $SCRIPT`
 # Path to OpenSAT (go on folder up and to opensat)
 LDC_SAD_DIR=$(dirname $BASEDIR)/ldc_sad_hmm
 
+$audio_dir=/vagrant/$1
+
 # Set CWD as LDC_SAD_HMM
 cd $LDC_SAD_DIR
 
 # launch ldc
 echo "using ldc_sad_hmm to perform Speech Activity Detecton"
-$conda_dir/python perform_sad.py  -L /vagrant/data /vagrant/data/*.wav
+$conda_dir/python perform_sad.py  -L $audio_dir $audio_dir/*.wav
 echo "finished using ldc_sad_hmm. Please look inside /vagrant/data to see the output in *.lab format"
 
 # move all files to name them correctly
-for wav in `ls /vagrant/data/*.wav`; do
+for wav in `ls $audio_dir/*.wav`; do
     # retrieve filename and remove .wav
     base=$(basename $wav .wav)
-    lab=/vagrant/data/ldc_sad_${base}.lab
-    mv /vagrant/data/${base}.lab $lab
+    lab=$audio_dir/ldc_sad_${base}.lab
+    mv $audio_dir/${base}.lab $lab
 done
 

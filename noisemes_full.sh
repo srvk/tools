@@ -6,7 +6,6 @@ conda_dir=/home/vagrant/anaconda/bin
 
 # run OpenSAT with hard coded models & configs found here and in /vagrant
 # assumes Python environment in /home/${user}/
-# usage: runDiarNoisemes.sh <folder containing .wav files to process>
 
 # Absolute path to this script. /home/user/bin/foo.sh
 SCRIPT=$(readlink -f $0)
@@ -15,7 +14,7 @@ BASEDIR=`dirname $SCRIPT`
 # Path to OpenSAT (go on folder up and to opensat)
 OPENSATDIR=$(dirname $BASEDIR)/OpenSAT
 
-audio_dir=/vagrant/data
+audio_dir=/vagrant/$1
 filename=$(basename "$audio_dir")
 dirname=$(dirname "$audio_dir")
 extension="${filename##*.}"
@@ -24,19 +23,18 @@ basename="${filename%.*}"
 # this is set in user's login .bashrc
 #export PATH=/home/${user}/anaconda/bin:$PATH
 
-# let's get our bearings: set CWD to path of OpenSAT
+# let's get our bearings: set CWD to the path of OpenSAT
 cd $OPENSATDIR
 
-# make output folder for features, below input folder
-mkdir -p $audio_dir/feature
-
 # first features
-for file in `ls $audio_dir/*.wav`; do
-  SSSF/code/feature/extract-htk-vm2.sh $file
-done
+echo "extracting Features for OpenSAT"
+SSSF/code/feature/extract-htk-vm.sh $audio_dir
 
 # then confidences
-$conda_dir/python SSSF/code/predict/1-confidence-vm3.py $audio_dir
+#/home/vagrant/anaconda/bin/python SSSF/code/predict/1-confidence-vm.py $BASEDIR/SSSF/data/feature/evl.med.htk/$basename.htk $basename
+echo "predicting classes"
+$conda_dir/python SSSF/code/predict/1-confidence-vm.py $BASEDIR/SSSF/data/feature/evl.med.htk/$basename.htk $basename
+echo "OpenSAT finished running"
 
 # take all the .rttm in /vagrant/data/hyp and move them to /vagrant/data - move features and hyp to another folder also.
 for sad in `ls $audio_dir/hyp/*.rttm`; do
@@ -45,19 +43,19 @@ for sad in `ls $audio_dir/hyp/*.rttm`; do
     mv $sad $rttm
 done
 
-if [ ! -d "/vagrant/diarNoisemes_temp" ]; then
-    mkdir -p /vagrant/diarNoisemes_temp
+if [ ! -d "/vagrant/openSAT_temp" ]; then
+    mkdir -p /vagrant/openSAT_temp
 fi
 
-if [ ! -d "/vagrant/diarNoisemes_temp/hyp" ]; then
-    mv /vagrant/data/hyp /vagrant/diarNoisemes_temp
+if [! -d "/vagrant/temp/hyp_sum" ]; then
+    mv /vagrant/data/hyp_sum /vagrant/openSAT_temp
 else
-    echo "can't move hyp_sum/ folder to diarNoisemes_temp/ because diarNoisemes_temp is already full"
+    echo "can't move hyp_sum/ folder to openSAT_temp/ because temp is already full"
 fi
 
-if [ ! -d "/vagrant/diarNoisemes_temp/feature" ]; then
-    mv /vagrant/data/feature /vagrant/diarNoisemes_temp
+if [! -d "/vagrant/temp/feature" ]; then
+    mv /vagrant/data/feature /vagrant/openSAT_temp
 else
-    echo "can't move feature/ folder to diarNoisemes_temp/ because diarNoisemes_temp is already full"
+    echo "can't move features/ folder to openSAT_temp/ because temp is already full"
 fi
 

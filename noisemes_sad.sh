@@ -16,7 +16,7 @@ BASEDIR=`dirname $SCRIPT`
 # Path to OpenSAT (go on folder up and to opensat)
 OPENSATDIR=$(dirname $BASEDIR)/OpenSAT
 
-audio_dir=/vagrant/data
+audio_dir=/vagrant/$1
 filename=$(basename "$audio_dir")
 dirname=$(dirname "$audio_dir")
 extension="${filename##*.}"

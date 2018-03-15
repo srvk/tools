@@ -20,7 +20,7 @@ DIARTKDIR=$(dirname $BASEDIR)/ib_diarization_toolkit
 cd $DIARTKDIR
 
 # path to the wav files
-audio_dir=/vagrant/data
+audio_dir=/vagrant/$1
 
 for fin in `ls $audio_dir/*.wav`; do
     filename=$(basename "$fin")
