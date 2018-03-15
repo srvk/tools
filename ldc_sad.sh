@@ -30,7 +30,7 @@ echo "finished using ldc_sad_hmm. Please look inside /vagrant/data to see the ou
 for wav in `ls $audio_dir/*.wav`; do
     # retrieve filename and remove .wav
     base=$(basename $wav .wav)
-    lab=$audio_dir/ldc_sad_${base}.lab
-    mv $audio_dir/${base}.lab $lab
+    rttm_out=$audio_dir/ldc_sad_${base}.rttm
+    grep ' speech' $audio_dir/${base}.lab | awk -v fname=$base '{print "SPEAKER" "\t" fname "\t" 1  "\t" $1  "\t" $2-$1 "\t" "<NA>" "\t" "<NA>"  "\t" $3  "\t"  "<NA>"}'   > $rttm_out
 done
 
