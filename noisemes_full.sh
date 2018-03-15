@@ -44,8 +44,8 @@ echo "OpenSAT finished running"
 
 # take all the .rttm in /vagrant/data/hyp and move them to /vagrant/data - move features and hyp to another folder also.
 for sad in `ls $audio_dir/hyp/*.rttm`; do
-    _rttm=`basename $sad`
-    rttm=/vagrant/data/opensat_sad_$_rttm
+    _rttm=$(basename $sad)
+    rttm=/vagrant/data/noiseme_full_${_rttm}
     mv $sad $rttm
 done
 
