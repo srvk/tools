@@ -11,7 +11,12 @@ BASEDIR=`dirname $SCRIPT`
 # Path to OpenSAT (go on folder up and to opensat)
 LDC_SAD_DIR=$(dirname $BASEDIR)/ldc_sad_hmm
 
-$audio_dir=/vagrant/$1
+if [ $# -ne 1 ]; then
+  echo "Usage: ldc_sad.sh <dirname>"
+  echo "where dirname is the name of the folder"
+  echo "containing the wav files"
+fi
+audio_dir=/vagrant/$1
 
 # Set CWD as LDC_SAD_HMM
 cd $LDC_SAD_DIR

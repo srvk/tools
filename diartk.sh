@@ -20,6 +20,13 @@ DIARTKDIR=$(dirname $BASEDIR)/ib_diarization_toolkit
 cd $DIARTKDIR
 
 # path to the wav files
+if [ $# -ne 1 ]; then
+  echo "Usage: diartk.sh <dirname>"
+  echo "where dirname is the name of the folder"
+  echo "containing the wav files"
+  exit 1;
+fi
+
 audio_dir=/vagrant/$1
 
 for fin in `ls $audio_dir/*.wav`; do

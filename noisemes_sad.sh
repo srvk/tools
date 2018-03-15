@@ -16,6 +16,12 @@ BASEDIR=`dirname $SCRIPT`
 # Path to OpenSAT (go on folder up and to opensat)
 OPENSATDIR=$(dirname $BASEDIR)/OpenSAT
 
+if [ $# -ne 1 ]; then
+  echo "Usage: noisemes_sad.sh <dirname>"
+  echo "where dirname is the name of the folder"
+  echo "containing the wav files"
+fi
+
 audio_dir=/vagrant/$1
 filename=$(basename "$audio_dir")
 dirname=$(dirname "$audio_dir")
