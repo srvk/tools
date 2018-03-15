@@ -28,6 +28,9 @@ if [ $# -ne 1 ]; then
 fi
 
 audio_dir=/vagrant/$1
+# Check audio_dir to see if empty or if contains empty wav
+bash $BASEDIR/check_folder.sh $audio_dir
+
 
 for fin in `ls $audio_dir/*.wav`; do
     filename=$(basename "$fin")

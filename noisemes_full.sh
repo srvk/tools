@@ -25,6 +25,9 @@ filename=$(basename "$audio_dir")
 dirname=$(dirname "$audio_dir")
 extension="${filename##*.}"
 basename="${filename%.*}"
+# Check audio_dir to see if empty or if contains empty wav
+bash $BASEDIR/check_folder.sh $audio_dir
+
 
 # this is set in user's login .bashrc
 #export PATH=/home/${user}/anaconda/bin:$PATH

@@ -6,8 +6,6 @@ source ~/.bashrc
 conda_dir=/home/vagrant/anaconda/bin
 
 # run OpenSAT with hard coded models & configs found here and in /vagrant
-# assumes Python environment in /home/${user}/
-# usage: runDiarNoisemes.sh <folder containing .wav files to process>
 
 # Absolute path to this script. /home/user/bin/foo.sh
 SCRIPT=$(readlink -f $0)
@@ -28,8 +26,8 @@ dirname=$(dirname "$audio_dir")
 extension="${filename##*.}"
 basename="${filename%.*}"
 
-# this is set in user's login .bashrc
-#export PATH=/home/${user}/anaconda/bin:$PATH
+# Check audio_dir to see if empty or if contains empty wav
+bash $BASEDIR/check_folder.sh $audio_dir
 
 # let's get our bearings: set CWD to path of OpenSAT
 cd $OPENSATDIR
