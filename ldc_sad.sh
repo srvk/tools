@@ -15,6 +15,7 @@ if [ $# -ne 1 ]; then
   echo "Usage: ldc_sad.sh <dirname>"
   echo "where dirname is the name of the folder"
   echo "containing the wav files"
+  exit 1
 fi
 audio_dir=/vagrant/$1
 
@@ -27,7 +28,7 @@ cd $LDC_SAD_DIR
 # launch ldc
 echo "using ldc_sad_hmm to perform Speech Activity Detecton"
 $conda_dir/python perform_sad.py  -L $audio_dir $audio_dir/*.wav
-echo "finished using ldc_sad_hmm. Please look inside /vagrant/data to see the output in *.lab format"
+echo "finished using ldc_sad_hmm. Please look inside $audio_dir to see the output in *.lab format"
 
 # move all files to name them correctly
 for wav in `ls $audio_dir/*.wav`; do

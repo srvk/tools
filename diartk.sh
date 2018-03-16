@@ -46,7 +46,7 @@ for fin in `ls $audio_dir/*.wav`; do
     basename="${filename%.*}"
     
     # create temp dir
-    workdir=/vagrant/temp_diartk
+    workdir=$audio_dir/temp_diartk
     
     mkdir -p $workdir
     
@@ -89,5 +89,5 @@ for fin in `ls $audio_dir/*.wav`; do
     
     # print results
     #cat $workdir/$basename.out
-    cp $workdir/$basename.rttm /vagrant/data/diartk_diar_${basename}.rttm
+    cp $workdir/$basename.rttm $audio_dir/diartk_diar_${basename}.rttm
 done

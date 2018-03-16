@@ -18,7 +18,7 @@ if [ $# -ne 1 ]; then
   echo "Usage: noisemes_sad.sh <dirname>"
   echo "where dirname is the name of the folder"
   echo "containing the wav files"
-  exit
+  exit 1
 fi
 
 audio_dir=/vagrant/$1
@@ -57,19 +57,20 @@ for sad in `ls $audio_dir/hyp_sum/*.lab`; do
 done
 
 # mv hyp and features folders to a temp that the user can delete.
-if [ ! -d "/vagrant/SAD_temp" ]; then
-    mkdir -p /vagrant/SAD_temp
+
+if [ ! -d "$audio_dir/noiseme_sad_temp" ]; then
+    mkdir -p $audio_dir/noiseme_sad_temp
 fi
 
-if [ ! -d "/vagrant/SAD_temp/hyp_sum" ]; then
-    mv /vagrant/data/hyp_sum /vagrant/SAD_temp
+if [! -d "$audio_dir/noiseme_sad_temp" ]; then
+    mv $audio_dir/hyp_sum $audio_dir/noiseme_sad_temp
 else
-    echo "can't move hyp_sum/ folder to SAD_temp/ because SAD_temp is already full"
+    echo "can't move hyp_sum/ folder to noiseme_full_temp/ because temp is already full"
 fi
 
-if [ ! -d "/vagrant/SAD_temp/feature" ]; then
-    mv /vagrant/data/feature /vagrant/SAD_temp
+if [! -d "$audio_dir/noiseme_sad_temp" ]; then
+    mv $audio_dir/feature $audio_dir/noiseme_sad_temp
 else
-    echo "can't move feature/ folder to SAD_temp/ because SAD_temp is already full"
+    echo "can't move features/ folder to openSAT_temp/ because temp is already full"
 fi
 

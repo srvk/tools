@@ -18,6 +18,7 @@ if [ $# -ne 1 ]; then
   echo "Usage: noisemes_full.sh <dirname>"
   echo "where dirname is the name of the folder"
   echo "containing the wav files"
+  exit 1
 fi
 
 audio_dir=/vagrant/$1
@@ -48,22 +49,22 @@ echo "OpenSAT finished running"
 # take all the .rttm in /vagrant/data/hyp and move them to /vagrant/data - move features and hyp to another folder also.
 for sad in `ls $audio_dir/hyp/*.rttm`; do
     _rttm=$(basename $sad)
-    rttm=/vagrant/data/noiseme_full_${_rttm}
+    rttm=$audio_dir/noiseme_full_${_rttm}
     mv $sad $rttm
 done
 
-if [ ! -d "/vagrant/openSAT_temp" ]; then
-    mkdir -p /vagrant/openSAT_temp
+if [ ! -d "$audio_dir/noiseme_full_temp" ]; then
+    mkdir -p $audio_dir/noiseme_full_temp
 fi
 
-if [! -d "/vagrant/temp/hyp_sum" ]; then
-    mv /vagrant/data/hyp_sum /vagrant/openSAT_temp
+if [! -d "$audio_dir/noiseme_full_temp" ]; then
+    mv $audio_dir/hyp_sum $audio_dir/noiseme_full_temp
 else
-    echo "can't move hyp_sum/ folder to openSAT_temp/ because temp is already full"
+    echo "can't move hyp_sum/ folder to noiseme_full_temp/ because temp is already full"
 fi
 
-if [! -d "/vagrant/temp/feature" ]; then
-    mv /vagrant/data/feature /vagrant/openSAT_temp
+if [! -d "$audio_dir/noiseme_full_temp" ]; then
+    mv $audio_dir/feature $audio_dir/noiseme_full_temp
 else
     echo "can't move features/ folder to openSAT_temp/ because temp is already full"
 fi
