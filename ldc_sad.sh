@@ -28,7 +28,7 @@ cd $LDC_SAD_DIR
 # launch ldc
 echo "using ldc_sad_hmm to perform Speech Activity Detecton"
 $conda_dir/python perform_sad.py  -L $audio_dir $audio_dir/*.wav
-echo "finished using ldc_sad_hmm. Please look inside $1 to see the output in *.lab format"
+echo "finished using ldc_sad_hmm. Please look inside $1 to see the output in *.rttm format"
 
 # move all files to name them correctly
 for wav in `ls $audio_dir/*.wav`; do
