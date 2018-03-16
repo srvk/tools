@@ -18,6 +18,7 @@ if [ $# -ne 1 ]; then
   echo "Usage: noisemes_sad.sh <dirname>"
   echo "where dirname is the name of the folder"
   echo "containing the wav files"
+  exit
 fi
 
 audio_dir=/vagrant/$1
@@ -49,7 +50,9 @@ echo "finished detecting speech and non speech segments"
 
 # take all the .rttm in /vagrant/data/hyp and move them to /vagrant/data - move features and hyp to another folder also.
 for sad in `ls $audio_dir/hyp_sum/*.lab`; do
-    rttm_out=noisemes_sad_$(basename $sad .lab).rttm
+    base=$(basename $sad .lab)
+    rttm_out=noisemes_sad_${base}.rttm
+    
     grep ' speech' $sad | awk -v fname=$base '{print "SPEAKER" "\t" fname "\t" 1  "\t" $1  "\t" $2-$1 "\t" "<NA>" "\t" "<NA>"  "\t" $3  "\t"  "<NA>"}'   > $audio_dir/$rttm_out
 done
 

@@ -61,23 +61,23 @@ for fin in `ls $audio_dir/*.wav`; do
     # math: convert RTTM seconds to HTK (10ms default) frames = multiply by 100
     case $trs_format in
       "ldc_sad")
-       grep SPEAKER $audio_dir/ldc_sad_${basename}.rttm | awk -v base="$basename" -v feats="$featfile" '{begg=$4*100;endd=($4+$5)*100; print base "_" begg "_" endd "="feats "[" begg "," endd "]"}' > $scpfile
+       bash /vagrant/toolbox/rttm2scp.sh $audio_dir/ldc_sad_${basename}.rttm $basename $featfile $scpfile
       ;;
       "noisemes")
-       grep SPEAKER $audio_dir/noisemes_sad_${basename}.rttm | awk -v base="$basename" -v feats="$featfile" '{begg=$4*100;endd=($4+$5)*100; print base "_" begg "_" endd "="feats "[" begg "," endd "]"}' > $scpfile
+       bash /vagrant/toolbox/rttm2scp.sh $audio_dir/noisemes_sad_${basename}.rttm $basename $featfile $scpfile
       ;;
       "textgrid") 
        $conda_dir/python /home/vagrant/varia/textgrid2rttm.py $audio_dir/${basename}.TextGrid $workdir/${basename}.rttm
-       grep SPEAKER $workdir/${basename}.rttm | awk -v base="$basename" -v feats="$featfile" '{begg=$4*100;endd=($4+$5)*100; print base "_" begg "_" endd "="feats "[" begg "," endd "]"}' > $scpfile 
+       bash /vagrant/toolbox/rttm2scp.sh $workdir/${basename}.rttm $basename $featfile $scpfile
        rm $workdir/$basename.rttm
       ;;
       "eaf")
        $conda_dir/python /home/vagrant/varia/elan2rttm.py $audio_dir/${basename}.eaf $workdir/${basename}.rttm
-       grep SPEAKER $workdir/${basename}.rttm | awk -v base="$basename" -v feats="$featfile" '{begg=$4*100;endd=($4+$5)*100; print base "_" begg "_" endd "="feats "[" begg "," endd "]"}' > $scpfile 
+       bash /vagrant/toolbox/rttm2scp.sh $workdir/${basename}.rttm $basename $featfile $scpfile
        rm $workdir/$basename.rttm
       ;;
       "rttm")
-       grep SPEAKER $audio_dir/${basename}.rttm | awk -v base="$basename" -v feats="$featfile" '{begg=$4*100;endd=($4+$5)*100; print base "_" begg "_" endd "="feats "[" begg "," endd "]"}' > $scpfile
+       bash /vagrant/toolbox/rttm2scp.sh $audio_dir/${basename}.rttm $basename $featfile $scpfile
       ;;
     esac
     
