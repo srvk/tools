@@ -20,14 +20,23 @@ DIARTKDIR=$(dirname $BASEDIR)/ib_diarization_toolkit
 cd $DIARTKDIR
 
 # path to the wav files
-if [ $# -ne 1 ]; then
-  echo "Usage: diartk.sh <dirname>"
+if [ $# -ne 2 ]; then
+  echo "Usage: diartk.sh <dirname> <transcription>"
   echo "where dirname is the name of the folder"
-  echo "containing the wav files"
+  echo "containing the wav files, and transcription"
+  echo "specifies which transcription you want to use."
+  echo "Choices are:"
+  echo "  -ldc_sad"
+  echo "  -noisemes"
+  echo "  -textgrid"
+  echo "  -eaf"
+  echo "  -rttm"
   exit 1;
 fi
 
 audio_dir=/vagrant/$1
+trs_format=$2
+
 # Check audio_dir to see if empty or if contains empty wav
 bash $BASEDIR/check_folder.sh $audio_dir
 
@@ -50,7 +59,22 @@ for fin in `ls $audio_dir/*.wav`; do
     # RTTM format:
     #   Type file chan tbeg tdur ortho stype name conf Slat
     # math: convert RTTM seconds to HTK (10ms default) frames = multiply by 100
-    grep SPEAKER /vagrant/data/${basename}.rttm | awk -v base="$basename" -v feats="$featfile" '{begg=$4*100;endd=($4+$5)*100; print base "_" begg "_" endd "="feats "[" begg "," endd "]"}' > $scpfile
+    case $trs_format in
+      "ldc_sad")
+       grep SPEAKER $audio_dir/ldc_sad_${basename}.rttm | awk -v base="$basename" -v feats="$featfile" '{begg=$4*100;endd=($4+$5)*100; print base "_" begg "_" endd "="feats "[" begg "," endd "]"}' > $scpfile ;;
+
+      "noisemes")
+    grep SPEAKER $audio_dir/noisemes_sad_${basename}.rttm | awk -v base="$basename" -v feats="$featfile" '{begg=$4*100;endd=($4+$5)*100; print base "_" begg "_" endd "="feats "[" begg "," endd "]"}' > $scpfile ;;
+      "textgrid") ;;
+      "eaf")
+       $conda_dir/python $/home/vagrant/varia/elan2rttm.py $audio_dir/${basename}.eaf $workdir/$basename.rttm
+     grep SPEAKER $workdir/${basename}.rttm | awk -v base="$basename" -v feats="$featfile" '{begg=$4*100;endd=($4+$5)*100; print base "_" begg "_" endd "="feats "[" begg "," endd "]"}' > $scpfile 
+       rm $workdir/$basename.rttm
+       ;;
+      "rttm")
+	     grep SPEAKER $audio_dir/${basename}.rttm | awk -v base="$basename" -v feats="$featfile" '{begg=$4*100;endd=($4+$5)*100; print base "_" begg "_" endd "="feats "[" begg "," endd "]"}' > $scpfile
+       ;;
+    esac
     
     # first generate HTK features
     HCopy -T 2 -C htkconfig $fin $featfile
