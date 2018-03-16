@@ -65,12 +65,12 @@ fi
 if [! -d "$audio_dir/noiseme_sad_temp" ]; then
     mv $audio_dir/hyp_sum $audio_dir/noiseme_sad_temp
 else
-    echo "can't move hyp_sum/ folder to noiseme_full_temp/ because temp is already full"
+    echo "can't move hyp_sum/ folder to noiseme_sad_temp/ because temp is already full"
 fi
 
 if [! -d "$audio_dir/noiseme_sad_temp" ]; then
     mv $audio_dir/feature $audio_dir/noiseme_sad_temp
 else
-    echo "can't move features/ folder to openSAT_temp/ because temp is already full"
+    echo "can't move features/ folder to noiseme_sad_temp/ because temp is already full"
 fi
 

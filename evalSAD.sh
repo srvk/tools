@@ -21,7 +21,7 @@ extension="${filename##*.}"
 basename="${filename%.*}"
 
 # check system to evaluate - either LDC, OpenSAT or "MySystem"
-system=$1
+system=$2
 
 if [[ $system = "ldc_sad" ]]; then
     sys_name="ldc_sad"
@@ -81,11 +81,11 @@ echo "evaluating"
 echo "filename	DCF	FA	MISS" > $audio_dir/${sys_name}_eval.df
 for lab in `ls $audio_dir/temp_sys/*.lab`; do
     base=$(basename $lab .lab)
-    python score.py $audio_dir/temp_ref $lab | awk -v var="$base" -F" " '{if ($1=="DCF:") {print var"	"$2"	"$4"	"$6}}' >> $results/${sys_name}_eval.df
+    python score.py $audio_dir/temp_ref $lab | awk -v var="$base" -F" " '{if ($1=="DCF:") {print var"	"$2"	"$4"	"$6}}' >> $audio_dir/${sys_name}_eval.df
 done
 # small detail: remove the commas from the output
-sed -i "s/,//g" $results/${sys_name}_eval.df
-echo "done evaluating, check ${sys_name}_eval.df for the results"
+sed -i "s/,//g" $audio_dir/${sys_name}_eval.df
+echo "done evaluating, check $1/${sys_name}_eval.df for the results"
 # remove temps
 rm -rf $audio_dir/temp_ref $audio_dir/temp_sys
 
