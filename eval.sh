@@ -25,12 +25,12 @@ system=$2
 
 case $system in
 "ldc_sad")
-   sh evalSAD.sh $audio_dir $system
+   sh $BASEDIR/evalSAD.sh $audio_dir $system
    ;;
 "noisemes")
-   sh evalSAD.sh $audio_dir noisemes_sad
+   sh $BASEDIR/evalSAD.sh $audio_dir noisemes_sad
    ;;
 "diartk")
-   sh evalDiar.sh $audio_dir
+   sh $BASEDIR/evalDiar.sh $audio_dir
    ;;
 esac
