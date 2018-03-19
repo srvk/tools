@@ -82,7 +82,7 @@ echo "evaluating"
 echo "filename	DCF	FA	MISS" > $audio_dir/${sys_name}_eval.df
 for lab in `ls $audio_dir/temp_sys/*.lab`; do
     base=$(basename $lab .lab)
-    python score.py $audio_dir/temp_ref $lab | awk -v var="$base" -F" " '{if ($1=="DCF:") {print var"	"$2"	"$4"	"$6}}' >> $audio_dir/${sys_name}_eval.df
+    $conda_dir/python score.py $audio_dir/temp_ref $lab | awk -v var="$base" -F" " '{if ($1=="DCF:") {print var"	"$2"	"$4"	"$6}}' >> $audio_dir/${sys_name}_eval.df
 done
 # small detail: remove the commas from the output
 sed -i "s/,//g" $audio_dir/${sys_name}_eval.df
