@@ -51,16 +51,17 @@ done
 # while also converting them to .rttm
 mkdir $audio_dir/temp_sys
 
-for lab in `ls $audio_dir/${sys_name}_*.lab`; do
-    base=$(basename $lab)
+for rttm in `ls $audio_dir/${sys_name}_*.rttm`; do
+    base=$(basename $rttm rttm)
     out=`echo $base | cut -d '_' -f 3-`
-    cp $lab $audio_dir/temp_sys/$out
+    #cp $rttm $audio_dir/temp_sys/$out
+    awk '{print $4" "($4+$5)" speech"}' $rttm > $audio_dir/temp_sys/${out}.lab
 done
 
 # check that temp_sys is not empty, otherwise exit and remove it.
 if [ -z "$(ls -A $audio_dir/temp_sys)" ]; then
     echo "didn't find any transcription from the system you specified. Please run the SAD before Evaluating."
-    rm -rf $audio_dir/temp_sys $audio_dir/temp_ref
+    #rm -rf $audio_dir/temp_sys $audio_dir/temp_ref
     exit
 fi
 
@@ -87,5 +88,5 @@ done
 sed -i "s/,//g" $audio_dir/${sys_name}_eval.df
 echo "done evaluating, check $1/${sys_name}_eval.df for the results"
 # remove temps
-rm -rf $audio_dir/temp_ref $audio_dir/temp_sys
+#rm -rf $audio_dir/temp_ref $audio_dir/temp_sys
 
