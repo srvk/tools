@@ -44,6 +44,7 @@ bash $BASEDIR/check_folder.sh $audio_dir
 for fin in `ls $audio_dir/*.wav`; do
     filename=$(basename "$fin")
     basename="${filename%.*}"
+    echo "treating $basename"
     
     # create temp dir
     workdir=$audio_dir/temp_diartk
@@ -61,23 +62,23 @@ for fin in `ls $audio_dir/*.wav`; do
     # math: convert RTTM seconds to HTK (10ms default) frames = multiply by 100
     case $trs_format in
       "ldc_sad")
-       bash /vagrant/toolbox/rttm2scp.sh $audio_dir/ldc_sad_${basename}.rttm $basename $featfile $scpfile
+       $conda_dir/python /vagrant/toolbox/rttm2scp.py $audio_dir/ldc_sad_${basename}.rttm $scpfile
       ;;
       "noisemes")
-       bash /vagrant/toolbox/rttm2scp.sh $audio_dir/noisemes_sad_${basename}.rttm $basename $featfile $scpfile
+       $conda_dir/python /vagrant/toolbox/rttm2scp.py $audio_dir/noisemes_sad_${basename}.rttm $scpfile
       ;;
       "textgrid") 
        $conda_dir/python /home/vagrant/varia/textgrid2rttm.py $audio_dir/${basename}.TextGrid $workdir/${basename}.rttm
-       bash /vagrant/toolbox/rttm2scp.sh $workdir/${basename}.rttm $basename $featfile $scpfile
+       $conda_dir/python /vagrant/toolbox/rttm2scp.py $workdir/${basename}.rttm $scpfile
        rm $workdir/$basename.rttm
       ;;
       "eaf")
        $conda_dir/python /home/vagrant/varia/elan2rttm.py $audio_dir/${basename}.eaf $workdir/${basename}.rttm
-       bash /vagrant/toolbox/rttm2scp.sh $workdir/${basename}.rttm $basename $featfile $scpfile
+       $conda_dir/python /vagrant/toolbox/rttm2scp.py $workdir/${basename}.rttm $scpfile
        rm $workdir/$basename.rttm
       ;;
       "rttm")
-       bash /vagrant/toolbox/rttm2scp.sh $audio_dir/${basename}.rttm $basename $featfile $scpfile
+       $conda_dir/python /vagrant/toolbox/rttm2scp.py $audio_dir/${basename}.rttm $scpfile
       ;;
     esac
     
