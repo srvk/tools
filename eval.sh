@@ -8,14 +8,17 @@ SCRIPT=$(readlink -f $0)
 # Absolute path this script is in. /home/user/bin
 BASEDIR=`dirname $SCRIPT`
 
-if [ $# -ne 2 ]; then
-  echo "Usage: eval.sh <data> <system>"
+if [ $# -ne 2 ] || [ $# -ne 3 ]; then
+  echo "Usage: eval.sh <data> <system> <<optionalSAD>>"
   echo "where data is the folder containing the data"
   echo "and system is the system you want"
   echo "to evaluate. Choices are:"
   echo "  -ldc_sad"
   echo "  -noisemes_sad"
   echo "  -diartk"
+  echo "If evaluating diartk, please give which flavour"
+  echo "of SAD you used to produce the diartk transcription"
+  echo "you want to evaluate"
   exit
 fi
 
@@ -31,6 +34,17 @@ case $system in
    sh $BASEDIR/evalSAD.sh $audio_dir noisemes_sad
    ;;
 "diartk")
-   sh $BASEDIR/evalDiar.sh $audio_dir
+   if [ $# -ne 3 ]; then
+      echo "please specify SAD flavour for diartk"
+      echo "Choices are :"
+      echo "  -ldc_sad"
+      echo "  -noisemes_sad"
+      echo "  -textgrid"
+      echo "  -eaf"
+      echo "  -rttm"
+      exit
+   fi
+   sad=$3
+   sh $BASEDIR/evalDiar.sh $audio_dir $sad
    ;;
 esac

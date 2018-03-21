@@ -12,6 +12,21 @@ BASEDIR=`dirname $SCRIPT`
 DSCOREDIR=$(dirname $BASEDIR)/dscore
 
 
+if [ $# -ne 2 ]; then
+  echo "Usage: evalDiar.sh <dirname> <transcription>"
+  echo "where dirname is the name of the folder"
+  echo "containing the wav files, and transcription"
+  echo "specifies which transcription you want to use."
+  echo "Choices are:"
+  echo "  -ldc_sad"
+  echo "  -noisemes"
+  echo "  -textgrid"
+  echo "  -eaf"
+  echo "  -rttm"
+  exit 1;
+fi
+
+
 # data directory
 audio_dir=/vagrant/$1
 filename=$(basename "$audio_dir")
@@ -19,8 +34,8 @@ dirname=$(dirname "$audio_dir")
 extension="${filename##*.}"
 basename="${filename%.*}"
 
-sys_name='goldSad'
-
+#sys_name='goldSad'
+trs_format=$2
 
 # Set CWD to path of Dscore
 #cd $DSCOREDIR
@@ -29,6 +44,33 @@ cd $DSCOREDIR
 # create temp dir and copy gold rttm inside it
 mkdir $audio_dir/temp_ref
 
+case $trs_format in
+  "ldc_sad")
+   sys_name="ldcSad"
+  ;;
+  "noisemes")
+   sys_name="noisemesSad"
+  ;;
+  "textgrid") 
+   sys_name="goldSad"
+   for wav in `ls $audio_dir/*.wav`; do
+       base=$(basename $wav .wav)
+       $conda_dir/python /home/vagrant/varia/textgrid2rttm.py $audio_dir/${basename}.TextGrid $audio_dir/${basename}.rttm
+   done
+  ;;
+  "eaf")
+    sys_name="goldSad"
+   for wav in `ls $audio_dir/*.wav`; do
+       base=$(basename $wav .wav)
+       $conda_dir/python /home/vagrant/varia/elan2rttm.py $audio_dir/${basename}.eaf $audio_dir/${basename}.rttm
+   done
+   ;;
+   "rttm")
+    sys_name="goldSad"
+   ;;
+esac
+
+# copy transcription to  temporary folders, since the eval takes folders !
 for wav in `ls $audio_dir/*.wav`; do
     base=$(basename $wav .wav)
     cp $audio_dir/${base}.rttm $audio_dir/temp_ref/${base}.rttm
@@ -40,6 +82,7 @@ done
 mkdir $audio_dir/temp_sys
 
 for rttm in `ls $audio_dir/diartk_${sys_name}_*.rttm`; do
+
     base=$(basename $rttm)
     out=`echo $base | cut -d '_' -f 3-`
     cp $rttm $audio_dir/temp_sys/$out
