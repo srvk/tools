@@ -25,7 +25,7 @@ system=$2
 
 if [[ $system = "ldc_sad" ]]; then
     sys_name="ldc_sad"
-elif [[ $system = "noiseme" ]]; then
+elif [[ $system = "noisemes" ]]; then
     sys_name="noiseme_sad"
 else
     echo "Please Specify the System you wish to evaluate."

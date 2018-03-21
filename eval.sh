@@ -27,11 +27,8 @@ audio_dir=$1
 system=$2
 
 case $system in
-"ldc_sad")
+"ldc_sad" "noisemes")
    sh $BASEDIR/evalSAD.sh $audio_dir $system
-   ;;
-"noisemes")
-   sh $BASEDIR/evalSAD.sh $audio_dir noisemes_sad
    ;;
 "diartk")
    if [ $# -ne 3 ]; then
