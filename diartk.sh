@@ -95,5 +95,5 @@ for fin in `ls $audio_dir/*.wav`; do
     
     # print results
     #cat $workdir/$basename.out
-    cp $workdir/$basename.rttm $audio_dir/diartk_$sys_${basename}.rttm
+    cp $workdir/$basename.rttm $audio_dir/diartk_${sys}_${basename}.rttm
 done
