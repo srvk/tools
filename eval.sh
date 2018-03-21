@@ -27,7 +27,7 @@ audio_dir=$1
 system=$2
 
 case $system in
-"ldc_sad" "noisemes")
+"ldc_sad"|"noisemes")
    sh $BASEDIR/evalSAD.sh $audio_dir $system
    ;;
 "diartk")
