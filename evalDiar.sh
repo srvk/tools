@@ -99,6 +99,6 @@ echo "evaluating"
 
 
 $conda_dir/python score_batch.py $audio_dir/${sys_name}_eval.df $audio_dir/temp_ref $audio_dir/temp_sys
-echo "done evaluating, check $1/${sys_name}_eval.df for the results"
+echo "done evaluating, check $1/diartk_${sys_name}_eval.df for the results"
 # remove temps
 rm -rf /vagrant/temp_ref /vagrant/temp_sys
