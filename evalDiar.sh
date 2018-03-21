@@ -98,7 +98,7 @@ fi
 echo "evaluating"
 
 
-$conda_dir/python score_batch.py $audio_dir/${sys_name}_eval.df $audio_dir/temp_ref $audio_dir/temp_sys
+$conda_dir/python score_batch.py $audio_dir/diartk_${sys_name}_eval.df $audio_dir/temp_ref $audio_dir/temp_sys
 echo "done evaluating, check $1/diartk_${sys_name}_eval.df for the results"
 # remove temps
 rm -rf $audio_dir/temp_ref $audio_dir/temp_sys
