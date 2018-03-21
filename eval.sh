@@ -8,7 +8,7 @@ SCRIPT=$(readlink -f $0)
 # Absolute path this script is in. /home/user/bin
 BASEDIR=`dirname $SCRIPT`
 
-if [ $# -ne 2 ] || [ $# -ne 3 ]; then
+if [ $# -lt 2 ] ; then
   echo "Usage: eval.sh <data> <system> <<optionalSAD>>"
   echo "where data is the folder containing the data"
   echo "and system is the system you want"
