@@ -19,7 +19,7 @@ dirname=$(dirname "$audio_dir")
 extension="${filename##*.}"
 basename="${filename%.*}"
 
-sys_name='diartk'
+sys_name='goldSad'
 
 
 # Set CWD to path of Dscore
@@ -39,7 +39,7 @@ done
 # while also converting them to .rttm
 mkdir $audio_dir/temp_sys
 
-for rttm in `ls $audio_dir/${sys_name}_*.rttm`; do
+for rttm in `ls $audio_dir/diartk_${sys_name}_*.rttm`; do
     base=$(basename $rttm)
     out=`echo $base | cut -d '_' -f 3-`
     cp $rttm $audio_dir/temp_sys/$out
