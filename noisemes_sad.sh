@@ -56,21 +56,22 @@ for sad in `ls $audio_dir/hyp_sum/*.lab`; do
     grep ' speech' $sad | awk -v fname=$base '{print "SPEAKER" "\t" fname "\t" 1  "\t" $1  "\t" $2-$1 "\t" "<NA>" "\t" "<NA>"  "\t" $3  "\t"  "<NA>"}'   > $audio_dir/$rttm_out
 done
 
+# simple remove hyp and feature
+rm -rf $audio_dir/hyp_sum $audio_dir/feature
 # mv hyp and features folders to a temp that the user can delete.
-
-if [ ! -d "$audio_dir/noiseme_sad_temp" ]; then
-    mkdir -p $audio_dir/noiseme_sad_temp
-fi
-
-if [! -d "$audio_dir/noiseme_sad_temp" ]; then
-    mv $audio_dir/hyp_sum $audio_dir/noiseme_sad_temp
-else
-    echo "can't move hyp_sum/ folder to noiseme_sad_temp/ because temp is already full"
-fi
-
-if [! -d "$audio_dir/noiseme_sad_temp" ]; then
-    mv $audio_dir/feature $audio_dir/noiseme_sad_temp
-else
-    echo "can't move features/ folder to noiseme_sad_temp/ because temp is already full"
-fi
-
+#if [ ! -d "$audio_dir/noiseme_sad_temp" ]; then
+#    mkdir -p $audio_dir/noiseme_sad_temp
+#fi
+#
+#if [! -d "$audio_dir/noiseme_sad_temp" ]; then
+#    mv $audio_dir/hyp_sum $audio_dir/noiseme_sad_temp
+#else
+#    echo "can't move hyp_sum/ folder to noiseme_sad_temp/ because temp is already full"
+#fi
+#
+#if [! -d "$audio_dir/noiseme_sad_temp" ]; then
+#    mv $audio_dir/feature $audio_dir/noiseme_sad_temp
+#else
+#    echo "can't move features/ folder to noiseme_sad_temp/ because temp is already full"
+#fi
+#

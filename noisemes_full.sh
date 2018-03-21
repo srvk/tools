@@ -37,14 +37,15 @@ bash $BASEDIR/check_folder.sh $audio_dir
 cd $OPENSATDIR
 
 # first features
-echo "extracting Features for OpenSAT"
-SSSF/code/feature/extract-htk-vm.sh $audio_dir
+echo "extracting Features for noisemes_full"
+SSSF/code/feature/extract-htk-vm2.sh $audio_dir
 
 # then confidences
 #/home/vagrant/anaconda/bin/python SSSF/code/predict/1-confidence-vm.py $BASEDIR/SSSF/data/feature/evl.med.htk/$basename.htk $basename
 echo "predicting classes"
-$conda_dir/python SSSF/code/predict/1-confidence-vm.py $BASEDIR/SSSF/data/feature/evl.med.htk/$basename.htk $basename
-echo "OpenSAT finished running"
+#$conda_dir/python SSSF/code/predict/1-confidence-vm.py $BASEDIR/SSSF/data/feature/evl.med.htk/$basename.htk $basename
+$conda_dir/python SSSF/code/predict/1-confidence-vm4.py $audio_dir
+echo "noisemes_full finished running"
 
 # take all the .rttm in /vagrant/data/hyp and move them to /vagrant/data - move features and hyp to another folder also.
 for sad in `ls $audio_dir/hyp/*.rttm`; do
@@ -53,19 +54,21 @@ for sad in `ls $audio_dir/hyp/*.rttm`; do
     mv $sad $rttm
 done
 
-if [ ! -d "$audio_dir/noiseme_full_temp" ]; then
-    mkdir -p $audio_dir/noiseme_full_temp
-fi
-
-if [! -d "$audio_dir/noiseme_full_temp" ]; then
-    mv $audio_dir/hyp_sum $audio_dir/noiseme_full_temp
-else
-    echo "can't move hyp_sum/ folder to noiseme_full_temp/ because temp is already full"
-fi
-
-if [! -d "$audio_dir/noiseme_full_temp" ]; then
-    mv $audio_dir/feature $audio_dir/noiseme_full_temp
-else
-    echo "can't move features/ folder to noiseme_full_temp/ because temp is already full"
-fi
-
+# simply remove hyp and feature
+rm -rf $audio_dir/feature $audio_dir/hyp_sum
+#if [ ! -d "$audio_dir/noiseme_full_temp" ]; then
+#    mkdir -p $audio_dir/noiseme_full_temp
+#fi
+#
+#if [! -d "$audio_dir/noiseme_full_temp" ]; then
+#    mv $audio_dir/hyp_sum $audio_dir/noiseme_full_temp
+#else
+#    echo "can't move hyp_sum/ folder to noiseme_full_temp/ because temp is already full"
+#fi
+#
+#if [! -d "$audio_dir/noiseme_full_temp" ]; then
+#    mv $audio_dir/feature $audio_dir/noiseme_full_temp
+#else
+#    echo "can't move features/ folder to noiseme_full_temp/ because temp is already full"
+#fi
+#

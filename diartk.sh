@@ -62,22 +62,27 @@ for fin in `ls $audio_dir/*.wav`; do
     # math: convert RTTM seconds to HTK (10ms default) frames = multiply by 100
     case $trs_format in
       "ldc_sad")
+       sys="ldcSad"
        $conda_dir/python /vagrant/toolbox/rttm2scp.py $audio_dir/ldc_sad_${basename}.rttm $scpfile
       ;;
       "noisemes")
+       sys="noisemesSad"
        $conda_dir/python /vagrant/toolbox/rttm2scp.py $audio_dir/noisemes_sad_${basename}.rttm $scpfile
       ;;
       "textgrid") 
+       sys="goldSad"
        $conda_dir/python /home/vagrant/varia/textgrid2rttm.py $audio_dir/${basename}.TextGrid $workdir/${basename}.rttm
        $conda_dir/python /vagrant/toolbox/rttm2scp.py $workdir/${basename}.rttm $scpfile
        rm $workdir/$basename.rttm
       ;;
       "eaf")
+       sys="goldSad"
        $conda_dir/python /home/vagrant/varia/elan2rttm.py $audio_dir/${basename}.eaf $workdir/${basename}.rttm
        $conda_dir/python /vagrant/toolbox/rttm2scp.py $workdir/${basename}.rttm $scpfile
        rm $workdir/$basename.rttm
       ;;
       "rttm")
+       sys="goldSad"
        $conda_dir/python /vagrant/toolbox/rttm2scp.py $audio_dir/${basename}.rttm $scpfile
       ;;
     esac
@@ -90,5 +95,5 @@ for fin in `ls $audio_dir/*.wav`; do
     
     # print results
     #cat $workdir/$basename.out
-    cp $workdir/$basename.rttm $audio_dir/diartk_diar_${basename}.rttm
+    cp $workdir/$basename.rttm $audio_dir/diartk_$sys_${basename}.rttm
 done
