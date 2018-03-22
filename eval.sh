@@ -45,6 +45,7 @@ case $system in
    sh $BASEDIR/evalDiar.sh $audio_dir $sad
    ;;
 *)
+  # pass here if no argument is given
   echo "ERROR: please choose system between:"
   echo "  ldc_sad"
   echo "  noisemes_sad"
