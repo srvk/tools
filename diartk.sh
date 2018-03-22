@@ -86,14 +86,17 @@ for fin in `ls $audio_dir/*.wav`; do
        $conda_dir/python /vagrant/toolbox/rttm2scp.py $audio_dir/${basename}.rttm $scpfile
       ;;
     esac
-    
-    # first generate HTK features
-    HCopy -T 2 -C htkconfig $fin $featfile
-    
-    # next run DiarTK
-    scripts/run.diarizeme.sh $featfile $scpfile $workdir $basename
-    
-    # print results
-    #cat $workdir/$basename.out
-    cp $workdir/$basename.rttm $audio_dir/diartk_${sys}_${basename}.rttm
+   
+    # don't process files with empty transcription
+    if [ -s $scpfile ]; then 
+        # first generate HTK features
+        HCopy -T 2 -C htkconfig $fin $featfile
+        
+        # next run DiarTK
+        scripts/run.diarizeme.sh $featfile $scpfile $workdir $basename
+        
+        # print results
+        #cat $workdir/$basename.out
+        cp $workdir/$basename.rttm $audio_dir/diartk_${sys}_${basename}.rttm
+    fi
 done
