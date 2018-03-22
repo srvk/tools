@@ -26,7 +26,7 @@ system=$2
 if [[ $system = "ldc_sad" ]]; then
     sys_name="ldc_sad"
 elif [[ $system = "noisemes" ]]; then
-    sys_name="noiseme_sad"
+    sys_name="noisemes_sad"
 else
     echo "Please Specify the System you wish to evaluate."
     echo "Choose between ldc_sad or noiseme_sad."
@@ -88,5 +88,5 @@ done
 sed -i "s/,//g" $audio_dir/${sys_name}_eval.df
 echo "done evaluating, check $1/${sys_name}_eval.df for the results"
 # remove temps
-#rm -rf $audio_dir/temp_ref $audio_dir/temp_sys
+rm -rf $audio_dir/temp_ref $audio_dir/temp_sys
 
