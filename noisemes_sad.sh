@@ -52,8 +52,11 @@ echo "finished detecting speech and non speech segments"
 for sad in `ls $audio_dir/hyp_sum/*.lab`; do
     base=$(basename $sad .lab)
     rttm_out=noisemes_sad_${base}.rttm
-    
-    grep ' speech' $sad | awk -v fname=$base '{print "SPEAKER" "\t" fname "\t" 1  "\t" $1  "\t" $2-$1 "\t" "<NA>" "\t" "<NA>"  "\t" $3  "\t"  "<NA>"}'   > $audio_dir/$rttm_out
+   if [ -s $sad ]; then 
+       grep ' speech' $sad | awk -v fname=$base '{print "SPEAKER" "\t" fname "\t" 1  "\t" $1  "\t" $2-$1 "\t" "<NA>" "\t" "<NA>"  "\t" $3  "\t"  "<NA>"}'   > $audio_dir/$rttm_out
+   else
+       touch $audio_dir/$rttm_out
+   fi
 done
 
 # simple remove hyp and feature

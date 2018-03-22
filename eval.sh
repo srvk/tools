@@ -13,9 +13,9 @@ if [ $# -lt 2 ] ; then
   echo "where data is the folder containing the data"
   echo "and system is the system you want"
   echo "to evaluate. Choices are:"
-  echo "  -ldc_sad"
-  echo "  -noisemes_sad"
-  echo "  -diartk"
+  echo "  ldc_sad"
+  echo "  noisemes_sad"
+  echo "  diartk"
   echo "If evaluating diartk, please give which flavour"
   echo "of SAD you used to produce the diartk transcription"
   echo "you want to evaluate"
@@ -34,14 +34,23 @@ case $system in
    if [ $# -ne 3 ]; then
       echo "please specify SAD flavour for diartk"
       echo "Choices are :"
-      echo "  -ldc_sad"
-      echo "  -noisemes_sad"
-      echo "  -textgrid"
-      echo "  -eaf"
-      echo "  -rttm"
-      exit
+      echo "  ldc_sad"
+      echo "  noisemes_sad"
+      echo "  textgrid"
+      echo "  eaf"
+      echo "  rttm"
+      exit 1
    fi
    sad=$3
    sh $BASEDIR/evalDiar.sh $audio_dir $sad
    ;;
+*)
+  echo "ERROR: please choose system between:"
+  echo "  ldc_sad"
+  echo "  noisemes_sad"
+  echo "  diartk"
+  echo "Now exiting..."
+  exit 1
+   ;;
+
 esac

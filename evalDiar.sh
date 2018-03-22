@@ -68,6 +68,17 @@ case $trs_format in
    "rttm")
     sys_name="goldSad"
    ;;
+   *)
+    echo "ERROR: please choose SAD system between:"
+    echo "  ldc_sad"
+    echo "  noisemes"
+    echo "  textgrid"
+    echo "  eaf"
+    echo "  rttm"
+    echo "Now exiting..."
+    exit 1
+   ;;
+
 esac
 
 # copy transcription to  temporary folders, since the eval takes folders !

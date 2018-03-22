@@ -26,11 +26,11 @@ if [ $# -ne 2 ]; then
   echo "containing the wav files, and transcription"
   echo "specifies which transcription you want to use."
   echo "Choices are:"
-  echo "  -ldc_sad"
-  echo "  -noisemes"
-  echo "  -textgrid"
-  echo "  -eaf"
-  echo "  -rttm"
+  echo "  ldc_sad"
+  echo "  noisemes"
+  echo "  textgrid"
+  echo "  eaf"
+  echo "  rttm"
   exit 1;
 fi
 
@@ -84,6 +84,16 @@ for fin in `ls $audio_dir/*.wav`; do
       "rttm")
        sys="goldSad"
        $conda_dir/python /vagrant/toolbox/rttm2scp.py $audio_dir/${basename}.rttm $scpfile
+      ;;
+      *)
+       echo "ERROR: please choose SAD system between:"
+       echo "  ldc_sad"
+       echo "  noisemes"
+       echo "  textgrid"
+       echo "  eaf"
+       echo "  rttm"
+       echo "Now exiting..."
+       exit 1
       ;;
     esac
    
