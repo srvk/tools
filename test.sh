@@ -43,4 +43,4 @@ sox /vagrant/test2.mp3 /vagrant/test2.wav # why is sox so quiet :)
 echo "DiarTK passed the test."
 
 # test finished
-echo "Congratulations, everything is OK!..."
+echo "Congratulations, everything is OK!"
