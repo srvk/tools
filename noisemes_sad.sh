@@ -1,5 +1,5 @@
 #!/bin/bash
-# runDiarNoisemes.sh
+# noisemes_sad.sh
 # Since the script is built to be launched outside of the vm, source
 # the .bashrc which is not necessarily sourced!
 source ~/.bashrc
@@ -16,8 +16,8 @@ OPENSATDIR=$(dirname $BASEDIR)/OpenSAT
 
 if [ $# -ne 1 ]; then
   echo "Usage: noisemes_sad.sh <dirname>"
-  echo "where dirname is the name of the folder"
-  echo "containing the wav files"
+  echo "where dirname is a folder on the host"
+  echo "containing the wav files (/vagrant/dirname/ in the VM)"
   exit 1
 fi
 
