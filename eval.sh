@@ -15,6 +15,8 @@ if [ $# -lt 2 ] ; then
   echo "to evaluate. Choices are:"
   echo "  ldc_sad"
   echo "  noisemes_sad"
+  echo "  tocombo_sad"
+  echo "  opensmile_sad"
   echo "  diartk"
   echo "If evaluating diartk, please give which flavour"
   echo "of SAD you used to produce the diartk transcription"
@@ -27,7 +29,7 @@ audio_dir=$1
 system=$2
 
 case $system in
-"ldc_sad"|"noisemes")
+"tocombo_sad"|"opensmile_sad"|"ldc_sad"|"noisemes")
    sh $BASEDIR/evalSAD.sh $audio_dir $system
    ;;
 "diartk")

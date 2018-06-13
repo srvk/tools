@@ -34,5 +34,5 @@ for sad in `ls $audio_dir/*.wav`; do
 	-C $CONFIG_FILE \
 	-I $file \
 	-turndebug 1 \
-	-logfile opensmile-vad.log 2>&1 | grep "of segment" | paste -sd ' \n' | awk -v FN=$id '{print "SPEAKER\t"FN"\t"$5"\t"$11"\t<NA>\t<NA>\tspeech\t<NA>\t<NA>"}' > $audio_dir/opensmile_sad_$id.rttm
+	-logfile opensmile-vad.log 2>&1 | grep "of segment" | paste -sd ' \n' | awk -v FN=$id '{print "SPEAKER\t"FN"\t1\t"$5"\t"($11-$5)"\t<NA>\t<NA>\tspeech\t<NA>"}' > $audio_dir/opensmile_sad_$id.rttm
 done

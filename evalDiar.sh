@@ -110,6 +110,17 @@ echo "evaluating"
 
 
 $conda_dir/python score_batch.py $audio_dir/diartk_${sys_name}_eval.df $audio_dir/temp_ref $audio_dir/temp_sys
+
+# Check if some gold files are empty. If so, add a line in the eval dataframe
+for fin in `ls $audio_dir/temp_ref/*.rttm`; do
+    base=$(basename $fin .rttm)
+    if [ ! -s $audio_dir/temp_ref/$base.rttm ]; then
+        echo $base"	NA	NA	NA	NA	NA	NA	NA	NA	NA" >> $audio_dir/diartk_${sys_name}_eval.df
+    elif [ ! -s $audio_dir/temp_sys/$base.rttm ]; then
+        echo $base"	100	NA	NA	NA	NA	NA	NA	NA	NA" >> $audio_dir/diartk_${sys_name}_eval.df
+    fi
+done
+
 echo "done evaluating, check $1/diartk_${sys_name}_eval.df for the results"
 # remove temps
 rm -rf $audio_dir/temp_ref $audio_dir/temp_sys

@@ -27,9 +27,16 @@ if [[ $system = "ldc_sad" ]]; then
     sys_name="ldc_sad"
 elif [[ $system = "noisemes" ]]; then
     sys_name="noisemes_sad"
+elif [[ $system = "tocombo_sad" ]]; then
+    sys_name="tocombo_sad"
+elif [[ $system = "opensmile_sad" ]]; then
+    sys_name="opensmile_sad"
+elif [[ $system = "lena_sad" ]]; then
+    sys_name="lena_sad"
+
 else
     echo "Please Specify the System you wish to evaluate."
-    echo "Choose between ldc_sad or noiseme_sad."
+    echo "Choose between ldc_sad, noiseme_sad, tocombo_sad and opensmile_sad."
     exit
 fi
 
@@ -83,6 +90,15 @@ echo "filename	DCF	FA	MISS" > $audio_dir/${sys_name}_eval.df
 for lab in `ls $audio_dir/temp_sys/*.lab`; do
     base=$(basename $lab .lab)
     $conda_dir/python score.py $audio_dir/temp_ref $lab | awk -v var="$base" -F" " '{if ($1=="DCF:") {print var"	"$2"	"$4"	"$6}}' >> $audio_dir/${sys_name}_eval.df
+    if [ ! -s $audio_dir/temp_ref/$base.lab  ]; then
+        echo $base"	NA	NA	NA" >> $audio_dir/${sys_name}_eval.df
+    elif [ ! -s $audio_dir/temp_sys/$base.lab ]; then
+        echo $base"	75.00%	0.00%	100.00%" >> $audio_dir/${sys_name}_eval.df
+
+
+
+    fi
+
 done
 # small detail: remove the commas from the output
 sed -i "s/,//g" $audio_dir/${sys_name}_eval.df
