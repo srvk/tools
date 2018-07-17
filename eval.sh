@@ -14,9 +14,9 @@ if [ $# -lt 2 ] ; then
   echo "and system is the system you want"
   echo "to evaluate. Choices are:"
   echo "  ldc_sad"
-  echo "  noisemes_sad"
-  echo "  tocombo_sad"
-  echo "  opensmile_sad"
+  echo "  noisemes"
+  echo "  tocombosad"
+  echo "  opensmile"
   echo "  diartk"
   echo "If evaluating diartk, please give which flavour"
   echo "of SAD you used to produce the diartk transcription"
@@ -29,7 +29,7 @@ audio_dir=$1
 system=$2
 
 case $system in
-"tocombo_sad"|"opensmile_sad"|"ldc_sad"|"noisemes")
+"tocombosad"|"opensmile"|"ldc_sad"|"noisemes")
    sh $BASEDIR/evalSAD.sh $audio_dir $system
    ;;
 "diartk")
@@ -37,7 +37,9 @@ case $system in
       echo "please specify SAD flavour for diartk"
       echo "Choices are :"
       echo "  ldc_sad"
-      echo "  noisemes_sad"
+      echo "  noisemes"
+      echo "  tocombosad"
+      echo "  opensmile"
       echo "  textgrid"
       echo "  eaf"
       echo "  rttm"
@@ -50,7 +52,9 @@ case $system in
   # pass here if no argument is given
   echo "ERROR: please choose system between:"
   echo "  ldc_sad"
-  echo "  noisemes_sad"
+  echo "  noisemes"
+  echo "  tocombosad"
+  echo "  opensmile"
   echo "  diartk"
   echo "Now exiting..."
   exit 1

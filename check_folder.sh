@@ -7,7 +7,7 @@ if [[ -z "$(ls -A $check_folder)" ]]; then
     echo "data folder is empty!"
     exit
 else
-    echo "folder is not empty!"
+    echo "wavs and transcriptions found !"
 fi
 
 # Then, check the consistency of all the files -> check if 

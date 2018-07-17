@@ -21,6 +21,8 @@ if [ $# -ne 2 ]; then
   echo "  -ldc_sad"
   echo "  -noisemes"
   echo "  -textgrid"
+  echo "  -opensmile"
+  echo "  -tocombosad"
   echo "  -eaf"
   echo "  -rttm"
   exit 1;
@@ -50,6 +52,12 @@ case $trs_format in
   ;;
   "noisemes")
    sys_name="noisemesSad"
+  ;;
+  "tocombosad")
+   sys_name="tocomboSad"
+  ;;
+  "opensmile")
+   sys_name="opensmileSad"
   ;;
   "textgrid") 
    sys_name="goldSad"
@@ -96,6 +104,7 @@ for rttm in `ls $audio_dir/diartk_${sys_name}_*.rttm`; do
 
     base=$(basename $rttm)
     out=`echo $base | cut -d '_' -f 3-`
+
     cp $rttm $audio_dir/temp_sys/$out
 done
 
@@ -115,8 +124,12 @@ $conda_dir/python score_batch.py $audio_dir/diartk_${sys_name}_eval.df $audio_di
 for fin in `ls $audio_dir/temp_ref/*.rttm`; do
     base=$(basename $fin .rttm)
     if [ ! -s $audio_dir/temp_ref/$base.rttm ]; then
-        echo $base"	NA	NA	NA	NA	NA	NA	NA	NA	NA" >> $audio_dir/diartk_${sys_name}_eval.df
-    elif [ ! -s $audio_dir/temp_sys/$base.rttm ]; then
+        if [ ! -s $audio_dir/temp_sys/$base.rttm ]; then
+            echo $base"	0	NA	NA	NA	NA	NA	NA	NA	NA" >> $audio_dir/diartk_${sys_name}_eval.df
+        else
+            echo $base"	100	NA	NA	NA	NA	NA	NA	NA	NA" >> $audio_dir/diartk_${sys_name}_eval.df
+        fi
+    elif [ ! -s $audio_dir/temp_sys/$base.rttm ] && [ -s $audio_dir/temp_ref/$base.rttm ]; then
         echo $base"	100	NA	NA	NA	NA	NA	NA	NA	NA" >> $audio_dir/diartk_${sys_name}_eval.df
     fi
 done

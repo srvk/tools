@@ -39,6 +39,7 @@ touch $audio_dir/feat/filelist.txt
 
 for f in $audio_dir/*.wav; do
    echo $f >> $audio_dir/feat/filelist.txt
+
 done
 echo "finished"
 
@@ -49,6 +50,6 @@ export LD_LIBRARY_PATH=$MCR/runtime/glnxa64:$MCR/bin/glnxa64:$MCR/sys/os/glnxa64
 
 for f in $audio_dir/*.ToCombo.txt; do
   bn=`basename $f .wav.ToCombo.txt`
-  python $TOCOMBOSADDIR/tocombo2rttm.py $f $bn > $audio_dir/tocombosad_$bn.rttm
+  python $TOCOMBOSADDIR/tocombo2rttm.py $f $bn > $audio_dir/tocombo_sad_$bn.rttm
 done
 

@@ -28,6 +28,8 @@ if [ $# -ne 2 ]; then
   echo "Choices are:"
   echo "  ldc_sad"
   echo "  noisemes"
+  echo "  tocombosad"
+  echo "  opensmile"
   echo "  textgrid"
   echo "  eaf"
   echo "  rttm"
@@ -76,6 +78,14 @@ for fin in `ls $audio_dir/*.wav`; do
        sys="noisemesSad"
        $conda_dir/python /vagrant/toolbox/rttm2scp.py $audio_dir/noisemes_sad_${basename}.rttm $scpfile
       ;;
+      "tocombosad")
+       sys="tocomboSad"
+        $conda_dir/python /vagrant/toolbox/rttm2scp.py $audio_dir/tocombo_sad_${basename}.rttm $scpfile
+      ;;
+      "opensmile")
+       sys="opensmileSad"
+        $conda_dir/python /vagrant/toolbox/rttm2scp.py $audio_dir/opensmile_sad_${basename}.rttm $scpfile
+      ;;
       "textgrid") 
        sys="goldSad"
        $conda_dir/python /home/vagrant/varia/textgrid2rttm.py $audio_dir/${basename}.TextGrid $workdir/${basename}.rttm
@@ -96,6 +106,8 @@ for fin in `ls $audio_dir/*.wav`; do
        echo "ERROR: please choose SAD system between:"
        echo "  ldc_sad"
        echo "  noisemes"
+       echo "  tocombosad"
+       echo "  opensmile"
        echo "  textgrid"
        echo "  eaf"
        echo "  rttm"
