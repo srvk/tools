@@ -11,7 +11,7 @@ conda_dir=/home/vagrant/anaconda/bin
 SCRIPT=$(readlink -f $0)
 # Absolute path this script is in. /home/user/bin
 BASEDIR=`dirname $SCRIPT`
-# Path to OpenSAT (go on folder up and to opensat)
+# Path to Yunitator (go one folder up and to Yunitator)
 YUNITATDIR=$(dirname $BASEDIR)/Yunitator
 
 if [ $# -ne 1 ]; then
