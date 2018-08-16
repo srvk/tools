@@ -37,7 +37,7 @@ echo "Noisemes passed the test."
 # finally test DIARTK
 echo "Testing DIARTK..."
 cd $DIARTKDIR
-# Diartk need wav not mp3, but test.wav is too short and make diartk crash ...
+# Diartk needs wav not mp3, but test.wav is too short and makes diartk crash ...
 sox /vagrant/test2.mp3 /vagrant/test2.wav # why is sox so quiet :)
 ./run-rttm.sh /vagrant/test2.wav /vagrant/test2.rttm /tmp/diartk-test || (echo "diartk failed!" && exit 1)
 echo "DiarTK passed the test."
