@@ -11,8 +11,8 @@ conda_dir=/home/vagrant/anaconda/bin
 SCRIPT=$(readlink -f $0)
 # Absolute path this script is in. /home/user/bin
 BASEDIR=`dirname $SCRIPT`
-# Path to Yunitator (go one folder up and to Yunitator)
-537CLASSIFY=$(dirname $BASEDIR)/537cls
+# Path to classify tool (go one folder up and to 537cls)
+CLASSIFY=$(dirname $BASEDIR)/537cls
 
 if [ $# -ne 1 ]; then
   echo "Usage: $0 <dirname>"
@@ -34,22 +34,15 @@ bash $BASEDIR/check_folder.sh $audio_dir
 #export PATH=/home/${user}/anaconda/bin:$PATH
 
 # let's get our bearings: set CWD to the path of Yunitator
-cd $537CLASSIFY
+cd $CLASSIFY
 
 # Iterate over files
 echo "Starting"
-for f in `ls $audio_dir/*.wav`; do
+for f in `ls ${audio_dir}/*.wav`; do
     ./run537classify.sh $f
+    base=$(basename $f .wav)
+    mv $audio_dir/${base}.rttm ${audio_dir}/537cls_${base}.rttm
+    mv $audio_dir/${base}.frame_prob.mat ${audio_dir}/537cls_${base}.frame_prob.mat
 done
 
 echo "$0 finished running"
-
-# take all the .rttm in $audio_dir/Yunitemp/ and move them to /vagrant/data
-for sad in `ls $audio_dir/Yunitemp/*.rttm`; do
-    _rttm=$(basename $sad)
-    rttm=$audio_dir/537_${_rttm}
-    mv $sad $rttm
-done
-
-# simply remove hyp and feature
-rm -rf $audio_dir/Yunitemp
