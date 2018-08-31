@@ -37,7 +37,22 @@ mkdir -p $audio_dir/feat
 rm -f $audio_dir/feat/filelist.txt
 touch $audio_dir/feat/filelist.txt
 
+# create temp dir to store audio files with 1 channels, if needed (i.e. if audio to treat has 2 or more channels.)
+# Indeed, To Combo Sad Fails when there are more than 1 channels.
+if [[ ! -d $audio_dir/tocombo_temp ]]; then
+    mkdir $audio_dir/tocombo_temp
+    temp_dir=$audio_dir/tocombo_temp
+fi
+
 for f in $audio_dir/*.wav; do
+   # Check if audio has 1 channel or more. If it has more, use sox to create a temp audio file w/ 1 channel.
+   n_chan=$(soxi $f | grep Channels | cut -d ':' -f 2)
+   if [[ $n_chan -gt 1 ]]; then 
+       base=$(basename $f)
+       sox -c $n_chan $f -c 1 $temp_dir/$base
+       f=$temp_dir/$base
+   fi
+
    echo $f >> $audio_dir/feat/filelist.txt
 
 done
@@ -47,6 +62,12 @@ MCR=/usr/local/MATLAB/MATLAB_Runtime/v93
 export LD_LIBRARY_PATH=$MCR/runtime/glnxa64:$MCR/bin/glnxa64:$MCR/sys/os/glnxa64:
 
 ./run_get_TOcomboSAD_output_v3.sh $MCR $audio_dir/feat/filelist.txt 0 0.5 $TOCOMBOSADDIR/UBMnodct256Hub5.txt
+
+# Retrieve the outputs from the temp folder
+mv $temp_dir/*ToCombo.txt $audio_dir
+
+# Delete the temp directory
+rm -rf $temp_dir
 
 for f in $audio_dir/*.ToCombo.txt; do
   bn=`basename $f .wav.ToCombo.txt`
