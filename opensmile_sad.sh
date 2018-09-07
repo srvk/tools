@@ -34,5 +34,16 @@ for sad in `ls $audio_dir/*.wav`; do
 	-C $CONFIG_FILE \
 	-I $file \
 	-turndebug 1 \
-	-logfile opensmile-vad.log 2>&1 | grep "of segment" | cut -d ' ' -f -7 | paste -sd ' \n' | awk -v FN=$id '{print "SPEAKER\t"FN"\t1\t"$5"\t"($10-$5)"\t<NA>\t<NA>\tspeech\t<NA>"}' > $audio_dir/opensmile_sad_$id.rttm
+	-logfile $audio_dir/opensmile-vad.log 2>&1 | grep "received" | awk -v FN=$id '{if ($1 == "(Start") {print "start "$(NF -1)} else if ($1 == "(End") {print "end "$(NF -1)}}' > $audio_dir/${id}.opensmile_sad.txt  
+    # | cut -d ' ' -f -7 | paste -sd ' \n' 
+    #| awk -v FN=$id '{if (($10-$5) > $5) {print "SPEAKER\t"FN"\t1\t"$5"\t"($10-$5)"\t<NA>\t<NA>\tspeech\t<NA>"}}' > $audio_dir/opensmile_sad_$id.rttm
+    #sed '/(MSG)/d' -i $audio_dir/opensmile_sad_$id.rttm
+    #sed '/[1]/d' -i $audio_dir/opensmile_sad_$id.rttm
+
 done
+
+for output in $(ls $audio_dir/*.opensmile_sad.txt); do
+    id=$(basename $output .opensmile_sad.txt)
+    awk -F ' ' -v FN=$id '{if ($1 == "start") {start_on = $2; prev=$1} else if ($1 == "end" && prev=="start") {print "SPEAKER\t"FN"\t1\t"start_on"\t"($2-start_on)"\t<NA>\t<NA>\tspeech\t<NA>"; prev=$1 } }' $output > $audio_dir/opensmile_sad_$id.rttm
+done
+
