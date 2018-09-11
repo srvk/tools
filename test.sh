@@ -30,7 +30,7 @@ DIARTKDIR=$(dirname $BASEDIR)/ib_diarization_toolkit
 # now test Noisemes
 echo "Testing noisemes..."
 cd $OPENSATDIR
-./runOpenSAT.sh /vagrant/test.wav >&/dev/null 2>&1 || (echo "noisemes failed!" && exit 1)
+./runOpenSAT.sh /vagrant/test.wav >&/dev/null 2>&1 || (echo "noisemes failed!" && kill $$ && exit 1)
 rm -rf $OPENSATDIR/SSSF/data/feature $OPENSATDIR/SSSF/data/hyp
 echo "Noisemes passed the test."
 
@@ -39,7 +39,7 @@ echo "Testing DIARTK..."
 cd $DIARTKDIR
 # Diartk needs wav not mp3, but test.wav is too short and makes diartk crash ...
 sox /vagrant/test2.mp3 /vagrant/test2.wav # why is sox so quiet :)
-./run-rttm.sh /vagrant/test2.wav /vagrant/test2.rttm /tmp/diartk-test || (echo "diartk failed!" && exit 1)
+./run-rttm.sh /vagrant/test2.wav /vagrant/test2.rttm /tmp/diartk-test || (echo "diartk failed!" && kill $$ && exit 1)
 echo "DiarTK passed the test."
 
 # test finished
