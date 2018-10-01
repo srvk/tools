@@ -69,10 +69,10 @@ for fin in `ls $audio_dir/*.wav`; do
       ;;
       "")
        # add default case
-       echo "Warning: no SAD source specified, taking ldc by default, at your own risk."
+       echo "Warning: no SAD source specified, using Noisemes by default, at your own risk."
        echo "Next time, please specify SAD."
-       sys="ldcSad"
-       $conda_dir/python /vagrant/toolbox/rttm2scp.py $audio_dir/ldc_sad_${basename}.rttm $scpfile
+       sys="noisemesSad"
+       $conda_dir/python /vagrant/toolbox/rttm2scp.py $audio_dir/noisemes_sad_${basename}.rttm $scpfile
       ;;
       "noisemes")
        sys="noisemesSad"
