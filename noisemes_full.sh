@@ -37,8 +37,13 @@ bash $BASEDIR/check_folder.sh $audio_dir
 cd $OPENSATDIR
 
 # first features
-echo "extracting Features for noisemes_full"
-SSSF/code/feature/extract-htk-vm2.sh $audio_dir
+echo "extracting features for noisemes_full"
+for file in `ls $audio_dir/*.wav`; do
+  SSSF/code/feature/extract-htk-vm2.sh $file
+done
+
+
+
 
 # then confidences
 #/home/vagrant/anaconda/bin/python SSSF/code/predict/1-confidence-vm.py $BASEDIR/SSSF/data/feature/evl.med.htk/$basename.htk $basename
