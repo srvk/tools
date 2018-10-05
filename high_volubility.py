@@ -308,7 +308,7 @@ def main():
     parser.add_argument('daylong', metavar='AUDIO_FILE',
             help='''Give RELATIVE path to the daylong recording'''
                  '''in wav format.''')
-    parser.add_argument('--step', default=600.0,
+    parser.add_argument('--step', default=600.0, type=float,
             help='''(Optional) Step, in seconds, between each chunk of '''
                  '''audio that will be extracted to be analysed by the SAD '''
                  '''tool. By default, step=600 seconds (10 minutes)''')
