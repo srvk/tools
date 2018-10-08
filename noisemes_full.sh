@@ -39,7 +39,7 @@ cd $OPENSATDIR
 # first features
 echo "extracting features for noisemes_full"
 for file in `ls $audio_dir/*.wav`; do
-  SSSF/code/feature/extract-htk-vm2.sh $file
+    SSSF/code/feature/extract-htk-vm2.sh $file
 done
 
 
@@ -52,8 +52,8 @@ echo "predicting classes"
 $conda_dir/python SSSF/code/predict/1-confidence-vm4.py $audio_dir
 echo "noisemes_full finished running"
 
-# take all the .rttm in /vagrant/data/hyp and move them to /vagrant/data - move features and hyp to another folder also.
-for sad in `ls $audio_dir/hyp/*.rttm`; do
+# take all the .rttm in /vagrant/data/hyp_sum and move them to /vagrant/data - move features and hyp_sum to another folder also.
+for sad in `ls $audio_dir/hyp_sum/*.rttm`; do
     _rttm=$(basename $sad)
     rttm=$audio_dir/noiseme_full_${_rttm}
     mv $sad $rttm
@@ -61,6 +61,7 @@ done
 
 # simply remove hyp and feature
 rm -rf $audio_dir/feature $audio_dir/hyp_sum
+
 #if [ ! -d "$audio_dir/noiseme_full_temp" ]; then
 #    mkdir -p $audio_dir/noiseme_full_temp
 #fi
