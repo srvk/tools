@@ -89,7 +89,7 @@ echo "evaluating"
 echo "filename	DCF	FA	MISS" > $audio_dir/${sys_name}_eval.df
 for lab in `ls $audio_dir/temp_sys/*.lab`; do
     base=$(basename $lab .lab)
-    $conda_dir/python score.py $audio_dir/temp_ref $lab | awk -v var="$base" -F" " '{if ($1=="DCF:") {print var"	"$2"	"$4"	"$6}}' >> $audio_dir/${sys_name}_eval.df
+
     if [ ! -s $audio_dir/temp_ref/$base.lab  ]; then
         if [ ! -s $audio_dir/temp_sys/$base.lab ]; then
             echo $base"	0.00%	0.00%	0.00%" >> $audio_dir/${sys_name}_eval.df
@@ -98,6 +98,8 @@ for lab in `ls $audio_dir/temp_sys/*.lab`; do
         fi
     elif [ ! -s $audio_dir/temp_sys/$base.lab ] && [ -s $audio_dir/temp_ref/$base.lab ]; then
         echo $base"	75.00%	0.00%	100.00%" >> $audio_dir/${sys_name}_eval.df
+    else
+        $conda_dir/python score.py $audio_dir/temp_ref $lab | awk -v var="$base" -F" " '{if ($1=="DCF:") {print var"	"$2"	"$4"	"$6}}' >> $audio_dir/${sys_name}_eval.df
     fi
 
 done
