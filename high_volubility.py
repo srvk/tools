@@ -2,7 +2,7 @@
 #
 # author = The ACLEW Team
 #
-""" 
+"""
 This script extract short snippets of sound (approx. 10s long),
 and runs them through a SAD or diarization tool to detect chunks of audio with :
 
@@ -10,10 +10,13 @@ and runs them through a SAD or diarization tool to detect chunks of audio with :
 --> python tools/high_volubility.py file_path.wav --sad noisemes_sad
 
 2) a lot of child speech
---> python tools/high_volubility.py file_path.wav --diar yunitate --label CHI
+--> python tools/high_volubility.py file_path.wav --diar yunitate --mode CHI
 
 3) a lot of parent-child conversations
---> python tools/high_volubility.py file_path.wav --diar yunitate --label PCCONV
+--> python tools/high_volubility.py file_path.wav --diar yunitate --mode PCCONV
+
+4) a lot of adults conversations with a child minimally aware
+--> python tools/high_volubility.py file_path.wav --diar yunitate --mode ACCA
 """
 
 import os
@@ -169,7 +172,7 @@ def extract_base_name(filename, diar):
 
 def detect_parent_child_conv(previous_activity, curr_activity, last_silence_dur):
     """
-    Attempts to try if an exchange happened between a child and his/her parents
+    Attempts to try if a turn-taking happened between a child and his/her parents
 
     Input:
         previous_activity:      the last activity amongst ['CHI', 'MAL', 'FEM']
@@ -177,8 +180,8 @@ def detect_parent_child_conv(previous_activity, curr_activity, last_silence_dur)
         last_silence_dur:       the duration of the last silence
 
     Output:
-        A boolean indicating if an exchange happened between a child and his/her parents
-            True : an exchange happened
+        A boolean indicating if a turn-taking happened between a child and his/her parents
+            True : a turn-taking happened
             False : nothing happened
     """
     if last_silence_dur <= 2.0:
@@ -190,22 +193,46 @@ def detect_parent_child_conv(previous_activity, curr_activity, last_silence_dur)
             return True
     return False
 
+def detect_adults_conv(previous_activity, curr_activity, last_silence_dur):
+    """
+    Attempts to try if a turn-taking happened between two adults
 
-def read_analyses(temp_abs, sad, perc, diar=None, label='CHI'):
+    Input:
+        previous_activity:      the last activity amongst ['CHI', 'MAL', 'FEM']
+        curr_activity:          the current activity amongst ['CHI', 'MAL', 'FEM']
+        last_silence_dur:       the duration of the last silence
+
+    Output:
+        A boolean indicating if a turn-taking happened between a child and his/her parents
+            True : a turn-taking happened
+            False : nothing happened
+    """
+    if last_silence_dur <= 2.0:
+        if (previous_activity == 'MAL' and curr_activity == 'FEM') or \
+                (previous_activity == 'FEM' and curr_activity == 'MAL') or \
+                (previous_activity == 'FEM' and curr_activity == 'FEM') or \
+                (previous_activity == 'MAL' and curr_activity == 'MAL'):
+
+            return True
+    return False
+
+def read_analyses(temp_abs, sad, perc, diar=None, mode='CHI', child_aware=False):
     """ When the model has finished producing its outputs, read all the
         transcriptions and sort the files by the quantity of their speech
         content or the quantity of their speech belonging to the noiseme_class.
 
         Input:
-            temp: path to the temp folder in which the snippets of sound are
-                  stored. Here we need the relative path, not the absolute
-                  path, since the SAD tool will add the "/vagrant/" part of
-                  the path.
-            sad:  name of the sad tool to be used to analyze the snippets of
-                  sound.
-            perc: the percentage of speech to keep.
-            diar: the diarization model (if provided).
-            label:the type of speech that needs to be kept (has to be amongst ['CHI']).
+            temp:           path to the temp folder in which the snippets of sound are
+                            stored. Here we need the relative path, not the absolute
+                            path, since the SAD tool will add the "/vagrant/" part of
+                            the path.
+            sad:            name of the sad tool to be used to analyze the snippets of
+                            sound.
+            perc:           the percentage of speech to keep.
+            diar:           the diarization model (if provided).
+            mode:           the type of speech that needs to be kept (has to be amongst ['CHI']).
+            child_aware :   (only used if mode == ACCA) Indicates, if we should filter the snippets
+                            that don't present any child activity.
 
         Output: 
             sorted_files: list(str), list of the files, sorted by the quantity
@@ -243,6 +270,8 @@ def read_analyses(temp_abs, sad, perc, diar=None, label='CHI'):
             silence_dur = 0.0
             # type of the last activity
             previous_activity = None
+            # variable to detect if the child is aware in ACCA mode.
+            chi_points = 0.0
 
             for line in speech_activity:
                 anno_fields = line.split('\t')
@@ -251,31 +280,45 @@ def read_analyses(temp_abs, sad, perc, diar=None, label='CHI'):
 
                 if not diar_mode:                                               # SAD mode
                     tot_dur += dur
-                elif diar_mode and label == 'CHI' and curr_activity == 'CHI':   # Child detection mode
-                    tot_dur += dur
-                elif diar_mode and label == 'PCCONV':                           # Parent-child detection mode
+                elif diar_mode and mode == 'CHI' and curr_activity == 'CHI':   # Child detection mode
+                    tot_dur += 1
+                elif diar_mode and mode == 'PCCONV':                           # Parent-child detection mode
                     if detect_parent_child_conv(previous_activity, curr_activity, silence_dur):
-                        # Here we consider more an objective function (number of exchanges) that
+                        # Here we consider more an objective function (number of turn-taking) that
                         # we want to maximize. That comes from the fact that adults speak during a
                         # longer time while children speak only for few seconds. And we don't want
                         # to put too much weight on the adults speech.
                         tot_dur += 1
+                elif diar_mode and mode == 'ACCA':                          # Adults conversation child aware detection
+                    if detect_adults_conv(previous_activity, curr_activity, silence_dur):
+                        tot_dur += 1
+                    elif curr_activity == 'CHI':
+                        chi_points += 1
 
-                    if curr_activity != 'SIL':
-                        previous_activity = curr_activity
-                        silence_dur = 0.0
-                    else:
-                        silence_dur = dur
+                # Reset silence_dur variable + store previous activity (if not silence)
+                if curr_activity != 'SIL':
+                    previous_activity = curr_activity
+                    silence_dur = 0.0
+                else:
+                    silence_dur = dur
 
+            files_n_dur.append((base, tot_dur, chi_points))
 
-            files_n_dur.append((base, tot_dur))
         # remove annotation when finished reading
         os.remove(os.path.join(temp_abs, file))
+
+    if child_aware and diar_mode == 'ACCA':
+        files_n_dur = [file for file in files_n_dur if file[2] > 3]
+
+    if len(files_n_dur) == 0:
+        raise ValueError("No moments for the {} mode has been found.\n Try to decrease the step parameter or " + \
+                         "to increase the size of the chunks.")
 
     files_n_dur = sorted(files_n_dur, key=itemgetter(1), reverse=True)
 
     # return top 10%% of snippets
-    percent = max(1, int( math.ceil(perc * len(files_n_dur))))
+    percent = max(1, int(math.ceil(perc * len(files_n_dur))))
+
     sorted_files = files_n_dur[:percent]
 
     return sorted_files
@@ -299,7 +342,7 @@ def new_onsets_two_minutes(sorted_files):
 
     # loop over selected files and retrieve their onsets from their name
     new_onset_list = []
-    for snippet, speech_dur in sorted_files:
+    for snippet, speech_dur, chi_points in sorted_files:
         onset = os.path.splitext(snippet)[0].split('_')[-2]
         offset = os.path.splitext(snippet)[0].split('_')[-1]
 
@@ -330,7 +373,7 @@ def new_onsets_five_minutes(sorted_files):
     """
     # loop over selected files and retrieve their onsets from their name
     new_onset_list = []
-    for snippet, speech_dur in sorted_files:
+    for snippet, speech_dur, chi_points in sorted_files:
         onset = os.path.splitext(snippet)[0].split('_')[-2]
         offset = os.path.splitext(snippet)[0].split('_')[-1]
 
@@ -400,16 +443,19 @@ def main():
                  '''analyze the snippets of sound. If this argument is provided by
                  the user, this script will be on the diarization mode. Otherwise, it will
                  be on the SAD mode.''')
-    parser.add_argument('--label', default='CHI', choices=['CHI','PCCONV'],
+    parser.add_argument('--mode', default='CHI', choices=['CHI', 'PCCONV', 'ACCA'],
                         help='''(Optional) the noiseme class(es) of interest. '''
                              '''Used only when the diar argument is provided.''')
 
     args = parser.parse_args()
 
-    if args.diar == 'yunitate' and args.label == 'PCCONV' and args.chunk_sizes[0] == 10.0:
-        print("You want to detect parent-child conversations but the chunk size has been set at 10 sec.\n"
-              "Resetting at 20 sec.\n")
-        args.chunk_sizes[0] = 20.0
+    if args.diar == 'yunitate' and (args.mode == 'PCCONV' or args.mode == 'ACCA' or args.mode == 'CHI'):
+        if args.chunk_sizes[0] == 10.0:
+            print("Resetting chunk size at 20.0 seconds (more suitable for CHI/PCCONV/ACCA mode).")
+            args.chunk_sizes[0] = 20.0
+        if args.step == 600.0:
+            print("Resetting step at 300.0 seconds (more suitable for CHI/PCCONV/ACCA mode).")
+            args.step = 300.0
 
     # Define Data dir
     data_dir = "/vagrant"
@@ -425,7 +471,7 @@ def main():
     wav_abs = os.path.join(data_dir, args.daylong)
 
     # get percentage
-    perc = args.percentage / 100
+    perc = args.percentage / 100.0
 
     # get path to current (tools/) dir - useful to call the SAD tool
     dir_path = os.path.dirname(os.path.realpath(__file__))
@@ -443,10 +489,10 @@ def main():
     run_Model(temp_rel, temp_abs, args.sad, args.diar)
 
     # sort by speech duration
-    sorted_files = read_analyses(temp_abs, args.sad, perc, args.diar, args.label)
+    sorted_files = read_analyses(temp_abs, args.sad, perc, args.diar, args.mode)
 
     # get new onsets for two minutes chunks
-    new_onset_list =  new_onsets_two_minutes(sorted_files)
+    new_onset_list = new_onsets_two_minutes(sorted_files)
 
     # extract two minutes chunks
     extract_chunks(wav_abs, new_onset_list, args.chunk_sizes[1], temp_abs)
@@ -455,7 +501,14 @@ def main():
     run_Model(temp_rel, temp_abs, args.sad, args.diar)
 
     # sort by speech duration again
-    sorted_files = read_analyses(temp_abs, args.sad, perc, args.diar, args.label)
+    child_aware = False
+    if args.mode == 'ACCA':
+        child_aware = True
+
+    sorted_files = read_analyses(temp_abs, args.sad, perc, args.diar, args.mode, child_aware)
+
+    # at the end we just want the best chunk
+    sorted_files = [sorted_files[0]]
 
     # get new onsets for five minutes chunks
     new_onset_list = new_onsets_five_minutes(sorted_files)
