@@ -507,9 +507,6 @@ def main():
 
     sorted_files = read_analyses(temp_abs, args.sad, perc, args.diar, args.mode, child_aware)
 
-    # at the end we just want the best chunk
-    sorted_files = [sorted_files[0]]
-
     # get new onsets for five minutes chunks
     new_onset_list = new_onsets_five_minutes(sorted_files)
 
