@@ -45,13 +45,13 @@ fi
 #cd $DSCOREDIR
 cd $LDC_SAD_DIR
 
-# create temp dir and copy gold rttm inside it
+# create temp dir and copy sorted gold rttm version inside of it
 mkdir $audio_dir/temp_ref
 
 for wav in `ls $audio_dir/*.wav`; do
     base=$(basename $wav .wav)
-    #cp $audio_dir/${base}.rttm /vagrant/temp_ref/${base}.rttm
-    awk '{print $4" "($4+$5)" speech"}' $audio_dir/${base}.rttm > $audio_dir/temp_ref/${base}.lab
+    sort --key 4 --numeric-sort $audio_dir/${base}.rttm -o $audio_dir/temp_ref/${base}.rttm
+    awk '{print $4" "($4+$5)" speech"}' $audio_dir/temp_ref/${base}.rttm > $audio_dir/temp_ref/${base}.lab
 done
 
 # create temp dir and copy system .lab inside it,
@@ -89,6 +89,7 @@ echo "evaluating"
 echo "filename	DCF	FA	MISS" > $audio_dir/${sys_name}_eval.df
 for lab in `ls $audio_dir/temp_sys/*.lab`; do
     base=$(basename $lab .lab)
+    $conda_dir/python score.py $audio_dir/temp_ref $lab | awk -v var="$base" -F" " '{if ($1=="DCF:") {print var"	"$2"	"$4"	"$6}}' >> $audio_dir/${sys_name}_eval.df
 
     if [ ! -s $audio_dir/temp_ref/$base.lab  ]; then
         if [ ! -s $audio_dir/temp_sys/$base.lab ]; then
@@ -98,8 +99,7 @@ for lab in `ls $audio_dir/temp_sys/*.lab`; do
         fi
     elif [ ! -s $audio_dir/temp_sys/$base.lab ] && [ -s $audio_dir/temp_ref/$base.lab ]; then
         echo $base"	75.00%	0.00%	100.00%" >> $audio_dir/${sys_name}_eval.df
-    else
-        $conda_dir/python score.py $audio_dir/temp_ref $lab | awk -v var="$base" -F" " '{if ($1=="DCF:") {print var"	"$2"	"$4"	"$6}}' >> $audio_dir/${sys_name}_eval.df
+    #else
     fi
 
 done
