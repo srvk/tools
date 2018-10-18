@@ -93,6 +93,7 @@ esac
 for wav in `ls $audio_dir/*.wav`; do
     base=$(basename $wav .wav)
     cp $audio_dir/${base}.rttm $audio_dir/temp_ref/${base}.rttm
+    sort --key 4 --numeric-sort $audio_dir/${base}.rttm -o $audio_dir/temp_ref/${base}.rttm
     #awk '{print $4" "($4+$5)" speech"}' $audio_dir/${base}.rttm > /vagrant/temp_ref/${base}.lab
 done
 
