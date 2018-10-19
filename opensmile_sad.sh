@@ -29,6 +29,7 @@ for sad in `ls $audio_dir/*.wav`; do
     file=$sad
     id=`basename $file`
     id=${id%.wav}
+    echo "Processing $id ..."
     LD_LIBRARY_PATH=/home/vagrant/usr/local/lib \
 	$OPENSMILE \
 	-C $CONFIG_FILE \
