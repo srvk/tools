@@ -51,6 +51,7 @@ mkdir $audio_dir/temp_ref
 for wav in `ls $audio_dir/*.wav`; do
     base=$(basename $wav .wav)
     sort --key 4 --numeric-sort $audio_dir/${base}.rttm -o $audio_dir/temp_ref/${base}.rttm
+    sed -i 's/ \+/\t/g' $audio_dir/temp_ref/${base}.rttm
     awk '{print $4" "($4+$5)" speech"}' $audio_dir/temp_ref/${base}.rttm > $audio_dir/temp_ref/${base}.lab
 done
 
