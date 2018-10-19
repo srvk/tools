@@ -100,7 +100,13 @@ for fin in `ls $audio_dir/*.wav`; do
       ;;
       "rttm")
        sys="goldSad"
-       $conda_dir/python /vagrant/toolbox/rttm2scp.py $audio_dir/${basename}.rttm $scpfile
+       # Since somes reference rttm files are spaced rather than tabbed, we need to
+       # tab them before using them. It's only the case for the original rttm.
+       # This solution is temporary and will be removed as soon as we respect the tabulation
+       # specification.
+       cp $audio_dir/${basename}.rttm $audio_dir/temp_diartk/${basename}.rttm
+       sed -i 's/ \+/\t/g' $audio_dir/temp_diartk/${basename}.rttm
+       $conda_dir/python /vagrant/toolbox/rttm2scp.py $audio_dir/temp_diartk/${basename}.rttm $scpfile
       ;;
       *)
        echo "ERROR: please choose SAD system between:"
