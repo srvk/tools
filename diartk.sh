@@ -139,4 +139,7 @@ for fin in `ls $audio_dir/*.wav`; do
         touch $audio_dir/diartk_${sys}_${basename}.rttm
     fi
 
+    # Delete temporary folder
+    rm -rf $workdir
+
 done
