@@ -26,9 +26,11 @@ cd $OSHOME/scripts/vad
 
 # Use OpenSMILE 2.1.0  
 for sad in `ls $audio_dir/*.wav`; do
+
     file=$sad
     id=`basename $file`
     id=${id%.wav}
+    > $audio_dir/${id}.opensmile_sad.txt #Make it empty if already present
     echo "Processing $id ..."
     LD_LIBRARY_PATH=/home/vagrant/usr/local/lib \
 	$OPENSMILE \
@@ -37,11 +39,11 @@ for sad in `ls $audio_dir/*.wav`; do
 	-turndebug 1 \
 	-noconsoleoutput 1 \
 	-saveSegmentTimes $audio_dir/${id}.opensmile_sad.txt \
-	-logfile $audio_dir/opensmile-vad.log >/dev/null
+	-logfile $audio_dir/opensmile-vad.log > /dev/null
 done
 
 for output in $(ls $audio_dir/*.opensmile_sad.txt); do
     id=$(basename $output .opensmile_sad.txt)
-    awk -F ';|,' -v FN=$id '{ start_on = $2; start_off = $3 ; print "SPEAKER\t"FN"\t1\t"start_on"\t"(start_off-start_on)"\t<NA>\t<NA>\tspeech\t<NA>" }' $output > $audio_dir/opensmile_sad_$id.rttm
+    awk -F ';|,' -v FN=$id '{ start_on = $2; start_off = $3 ; print "SPEAKER "FN" 1 "start_on" "(start_off-start_on)" <NA> <NA> speech <NA>" }' $output > $audio_dir/opensmile_sad_$id.rttm
 done
 

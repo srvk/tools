@@ -274,7 +274,7 @@ def read_analyses(temp_abs, sad, perc, diar=None, mode='CHI', child_aware=False)
             chi_points = 0.0
 
             for line in speech_activity:
-                anno_fields = line.split('\t')
+                anno_fields = line.split(' ')
                 dur = float(anno_fields[4])
                 curr_activity = anno_fields[7]
 

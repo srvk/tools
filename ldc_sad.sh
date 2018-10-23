@@ -36,7 +36,7 @@ for wav in `ls $audio_dir/*.wav`; do
     base=$(basename $wav .wav)
     rttm_out=$audio_dir/ldc_sad_${base}.rttm
     if [ -s $audio_dir/${base}.lab ]; then 
-        grep ' speech' $audio_dir/${base}.lab | awk -v fname=$base '{print "SPEAKER" "\t" fname "\t" 1  "\t" $1  "\t" $2-$1 "\t" "<NA>" "\t" "<NA>"  "\t" $3  "\t"  "<NA>"}'   > $rttm_out
+        grep ' speech' $audio_dir/${base}.lab | awk -v fname=$base '{print "SPEAKER" " " fname " " 1  " " $1  " " $2-$1 " " "<NA>" " " "<NA>"  " " $3  " "  "<NA>"}'   > $rttm_out
     else
         touch $rttm_out
     fi

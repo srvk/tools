@@ -24,7 +24,7 @@ DIARTKDIR=$(dirname $BASEDIR)/ib_diarization_toolkit
 #cd $LDC_SAD_DIR
 #$conda_dir/python perform_sad.py -L /vagrant /vagrant/test2.mp3 > /dev/null 2>&1 || exit 1
 # convert output to rttm, for diartk.
-#grep ' speech' /vagrant/test2.lab | awk -v fname=$base '{print "SPEAKER" "\t" fname "\t" 1  "\t" $1  "\t" $2-$1 "\t" "<NA>" "\t" "<NA>"  "\t" $3  "\t"  "<NA>"}'   > /vagrant/test2.rttm
+#grep ' speech' /vagrant/test2.lab | awk -v fname=$base '{print "SPEAKER" " " fname " " 1  " " $1  " " $2-$1 " " "<NA>" " " "<NA>"  " " $3  " "  "<NA>"}'   > /vagrant/test2.rttm
 #echo "LDC_SAD passed the test..."
 
 # now test Noisemes
