@@ -29,6 +29,7 @@ def eaf2txt(path_to_eaf, output_folder, cleanup=False):
     output_file = open(output_path, 'w')
     EAF = pmp.Elan.Eaf(path_to_eaf)
     tiers = EAF.tiers
+    print(EAF.languages)
     for tier in tiers:
         try:
             annotations = EAF.get_annotation_data_for_tier(tier)
@@ -54,19 +55,15 @@ def main():
     parser = argparse.ArgumentParser(description="convert .eaf into .rttm")
     parser.add_argument('-i', '--input', type=str, required=True,
                         help="path to the input .eaf file or the folder containing eaf files.")
-    parser.add_argument('-o', '--output', type=str,
-                        help="(Optional) path to the folder in which to write the output."
-                             "Each output .rttm file will have the same name as the "
-                             "input file - except for the extension")
+
     args = parser.parse_args()
 
     # Initialize the output folder as the same folder than the input
     # if not provided by the user.
-    if args.output is None:
-        if args.input[-4:] == '.eaf':
-            args.output = os.path.dirname(args.input)
-        else:
-            args.output = args.input
+    if args.input[-4:] == '.eaf':
+        args.output = os.path.dirname(args.input)
+    else:
+        args.output = args.input
 
     data_dir = '/vagrant'
     args.input = os.path.join(data_dir, args.input)

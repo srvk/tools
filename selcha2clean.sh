@@ -7,7 +7,6 @@ LC_CTYPE=C
 SELFILE=$1
 ORTHO=$2
 #########
-#Make them work within the vm by appending the data directory
 DATA_DIR=/vagrant
 SELFILE="$DATA_DIR/$SELFILE"
 ORTHO="$DATA_DIR/$ORTHO"
@@ -101,13 +100,8 @@ sed 's/[0-9]//g' | # We remove all of the remaining numbers
 #tr -d '\t' |
 awk '{gsub("\"",""); print}' > ${CLEAN_TRANSCRIPT}3.tmp
 
-
-
-# Phonemize the clean version
-phonemize ${CLEAN_TRANSCRIPT}3.tmp -o ${PHONEMIZED}.tmp -s -
-
-## Append number of syllables to the phonemized transcription
-cat ${PHONEMIZED}.tmp | awk -F- '{print $0"\t"NF-1}' > ${PHONEMIZED}
+SCRIPT_DIR=$(dirname "$0")
+$SCRIPT_DIR/syllabify.sh ${CLEAN_TRANSCRIPT}3.tmp ${PHONEMIZED} english
 
 ## Append number of words to the clean transcription
 cat ${CLEAN_TRANSCRIPT}3.tmp | awk -F'[ ]' '{print $0"\t"NF}' > ${CLEAN_TRANSCRIPT}
@@ -142,7 +136,7 @@ paste -d$'\t' ${ORTHO}2.tmp ${ORTHO}.tmp > $ORTHO
 ##generated double spaces between 2 words (while not present in
 ##included)
 sed -i -e 's/ $//g' $ORTHO
+
 #
 rm ${DIRNAME}/*.tmp
 rm ${CLEAN_TRANSCRIPT}
-rm ${PHONEMIZED}
