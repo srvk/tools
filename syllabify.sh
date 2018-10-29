@@ -1,12 +1,17 @@
 #!/usr/bin/env bash
-
+# Given an input file (containing raw text), an output one, and a language (english, spanish or tzeltal)
+# Write in the output file the phonemization (if english) or the syllabification (if spanish or tzeltal) of it,
+# and count the number of syllables
 ### Script parameters
 INPUT=$1
 OUTPUT=$2
 LANG=$3
 VOWELS=$4
 ###
-
+DATA_DIR="/vagrant"
+INPUT=$DATA_DIR"/"$INPUT
+OUTPUT=$DATA_DIR"/"$OUTPUT
+DIRNAME=${INPUT%/*}
 EXTENSION=${INPUT##*.}
 
 display_usage() {
@@ -23,7 +28,6 @@ display_usage() {
 
 if [ -z "$1" ] || [ -z "$2" ] || ! [[ $EXTENSION =~ ^(txt|tmp)$ ]]; then
     display_usage
-    exit 1
 fi
 
 if [ -z "$3" ]; then
@@ -33,9 +37,10 @@ fi
 
 if [ "$3" == "spanish" ] || [ "$3" == "tzeltal" ]; then
     if [ -z "$4" ]; then
+        VOWELS="aeiouáéíóúü"
         echo "Language set on spanish or tzeltal. But no vowels have been provided."
-        echo "Setting this parameter to aeiou"
-        VOWELS="aeiou"
+        echo "Setting this parameter to $VOWELS"
+        echo $VOWELS > $DIRNAME"/"$LANG"-Vowels.txt"
     fi
 fi
 
@@ -46,6 +51,27 @@ if [ "$3" == "english" ]; then
 
     ## Append number of syllables to the phonemized transcription
     cat ${OUTPUT}.tmp | awk -F- '{print $0"\t"NF-1}' > ${OUTPUT}
+elif [ "$3" == "spanish" ] || [ "$3" == "tzeltal" ]; then
+    # Changing upper case to lower case
+    cat $INPUT | tr '[:upper:]' '[:lower:]' | tr 'A-ZÂÁÀÄÊÉÈËÏÍÎÖÓÔÖÚÙÛÑÇ' 'a-zâáàäêéèëïíîöóôöúùûñç' > $INPUT.tmp
+    # Get all the different words in the corpus
+    # and get the different onsets by removing what follows the first vowel
+    cat $INPUT.tmp | tr ' ' '\n' | sort | uniq |
+                    sed 's/[aeiou].*//g' | grep .| uniq >  $DIRNAME"/"$LANG"-ValidOnsets.txt"
+    SCRIPT_DIR=$(dirname "$0")
+    perl $SCRIPT_DIR/catspa-syllabify-corpus.pl $LANG $INPUT.tmp $OUTPUT.tmp
+
+    ## Append number of syllables
+    cat $OUTPUT.tmp | awk -F'/' '{print $0"\t"NF-1}' > $OUTPUT
+
+    rm $INPUT.tmp $DIRNAME"/"$LANG"-ValidOnsets.txt" $DIRNAME"/"$LANG"-Vowels.txt"
+else
+    echo "Language unknown."
+    exit 1
 fi
 
-rm ${OUTPUT}.tmp
+echo "Done."
+
+rm $OUTPUT.tmp
+
+

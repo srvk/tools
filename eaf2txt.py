@@ -1,9 +1,16 @@
 """
 This script converts an eaf file into a txt file containing the following information :
 
-onset   offset  ortho   receiver    speaker_tier
+onset offset transcription receiver speaker_tier
 
 It can be run either on a single eaf file, or on a whole folder containing eaf files.
+
+Example of use :
+    python tools/eaf2txt.py -i data/0396.eaf    # One one file
+    python tools/eaf2txt.py -i data/            # On a whole folder$
+
+About the naming convention of the output :
+    For each file called input_file.eaf, the result will be stored in input_file.txt
 """
 
 import pympi as pmp
@@ -29,7 +36,6 @@ def eaf2txt(path_to_eaf, output_folder, cleanup=False):
     output_file = open(output_path, 'w')
     EAF = pmp.Elan.Eaf(path_to_eaf)
     tiers = EAF.tiers
-    print(EAF.languages)
     for tier in tiers:
         try:
             annotations = EAF.get_annotation_data_for_tier(tier)
@@ -55,30 +61,29 @@ def main():
     parser = argparse.ArgumentParser(description="convert .eaf into .rttm")
     parser.add_argument('-i', '--input', type=str, required=True,
                         help="path to the input .eaf file or the folder containing eaf files.")
-
     args = parser.parse_args()
 
     # Initialize the output folder as the same folder than the input
     # if not provided by the user.
     if args.input[-4:] == '.eaf':
-        args.output = os.path.dirname(args.input)
+        output = os.path.dirname(args.input)
     else:
-        args.output = args.input
+        output = args.input
 
     data_dir = '/vagrant'
     args.input = os.path.join(data_dir, args.input)
-    args.output = os.path.join(data_dir, args.output)
+    output = os.path.join(data_dir, output)
 
-    if not os.path.isdir(args.output):
-        os.mkdir(args.output)
+    if not os.path.isdir(output):
+        os.mkdir(output)
 
     if args.input[-4:] == '.eaf':   # A single file has been provided by the user
-        eaf2txt(args.input, args.output)
+        eaf2txt(args.input, output)
     else:                           # A whole folder has been provided
         eaf_files = glob.iglob(os.path.join(args.input, '*.eaf'))
         for eaf_path in eaf_files:
             print("Processing %s" % eaf_path)
-            eaf2txt(eaf_path, args.output)
+            eaf2txt(eaf_path, output)
 
 if __name__ == '__main__':
     main()
