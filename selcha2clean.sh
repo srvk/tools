@@ -21,11 +21,11 @@ display_usage() {
     echo "usage: $0 [input] [output] [language]"
     echo "  input       The file path where to find the input txt file (REQUIRED)."
     echo "  output      The output path (REQUIRED)."
-    echo "  language    The language of the transcription (REQUIRED)."
+    echo "  language    The language of the transcription : english, spanish or tzeltal (REQUIRED)."
 	exit 1
 	}
 
-if [ -z "$1" ] || [ -z "$2" ] || [ -z "$3" ]; then
+if [ -z "$1" ] || [ -z "$2" ] || [ -z "$3" ] || ! [[ $LANG =~ ^(english|spanish|tzeltal)$ ]]; then
     display_usage
 fi
 
