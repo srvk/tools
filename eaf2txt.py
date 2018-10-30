@@ -7,7 +7,7 @@ It can be run either on a single eaf file, or on a whole folder containing eaf f
 
 Example of use :
     python tools/eaf2txt.py -i data/0396.eaf    # One one file
-    python tools/eaf2txt.py -i data/            # On a whole folder$
+    python tools/eaf2txt.py -i data/            # On a whole folder
 
 About the naming convention of the output :
     For each file called input_file.eaf, the result will be stored in input_file.txt
