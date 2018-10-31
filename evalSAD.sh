@@ -8,8 +8,7 @@ conda_dir=/home/vagrant/anaconda/bin
 SCRIPT=$(readlink -f $0)
 # Absolute path this script is in. /home/user/bin
 BASEDIR=`dirname $SCRIPT`
-# Path to OpenSAT (go on folder up and to opensat)
-#DSCOREDIR=$(dirname $BASEDIR)/dscore
+# Path to scoring tool NOTE: NOT dscore!
 LDC_SAD_DIR=$(dirname $BASEDIR)/ldc_sad_hmm
 
 
@@ -41,7 +40,7 @@ else
 fi
 
 
-# Set CWD to path of Dscore
+# Set CWD to path of scoring tool
 cd $LDC_SAD_DIR
 
 $BASEDIR/create_ref_sys.sh $audio_dir $sys_name true
