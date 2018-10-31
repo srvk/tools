@@ -42,49 +42,10 @@ fi
 
 
 # Set CWD to path of Dscore
-#cd $DSCOREDIR
 cd $LDC_SAD_DIR
 
-# create temp dir and copy sorted gold rttm version inside of it
-mkdir $audio_dir/temp_ref
+$BASEDIR/create_ref_sys.sh $audio_dir $sys_name true
 
-for wav in `ls $audio_dir/*.wav`; do
-    base=$(basename $wav .wav)
-    sort --key 4 --numeric-sort $audio_dir/${base}.rttm -o $audio_dir/temp_ref/${base}.rttm
-    sed -i 's/\t/ /g' $audio_dir/temp_ref/${base}.rttm
-    sed -i 's/ \+/ /g' $audio_dir/temp_ref/${base}.rttm
-    awk '{print $4" "($4+$5)" speech"}' $audio_dir/temp_ref/${base}.rttm > $audio_dir/temp_ref/${base}.lab
-done
-
-# create temp dir and copy system .lab inside it,
-# while also converting them to .rttm
-mkdir $audio_dir/temp_sys
-
-for rttm in `ls $audio_dir/${sys_name}_*.rttm`; do
-    base=$(basename $rttm .rttm)
-    out=`echo $base | cut -d '_' -f 3-`
-    #cp $rttm $audio_dir/temp_sys/$out
-    awk '{print $4" "($4+$5)" speech"}' $rttm > $audio_dir/temp_sys/${out}.lab
-done
-
-# check that temp_sys is not empty, otherwise exit and remove it.
-if [ -z "$(ls -A $audio_dir/temp_sys)" ]; then
-    echo "didn't find any transcription from the system you specified. Please run the SAD before Evaluating."
-    rm -rf $audio_dir/temp_sys $audio_dir/temp_ref
-    exit
-fi
-
-## convert lab to rttm and remove labs
-#echo "gathering all files to evaluate"
-#sh /vagrant/toolbox/lab2rttm.sh /vagrant/temp_sys
-#
-#rm /vagrant/temp_sys/*.lab
-
-# evaluate using score.py
-# output of score.py is of this format: 
-#   DCF: 0.00%, FA: 0.00%, MISS: 0.00%
-#   DUR: 0.01 sec
-#
 echo "evaluating"
 #$conda_dir/python score_batch.py /vagrant/data/${sys_name}_eval.df /vagrant/temp_ref /vagrant/temp_sys
 # create /vagrant/results if it doesn't exist

@@ -75,6 +75,10 @@ def txt2rttm(path_to_txt, output_folder, lena_mode=False):
         dirname = os.path.dirname(path_to_txt)
         output_basename = lena_to_aclew_name(os.path.join(dirname, 'tsi_key_info.xlsx'), basename)
         output_path = os.path.join(dirname, output_basename + '.rttm')
+        # Change the output_basename because we don't want to write the model prefix lena_
+        # in the rttm fil
+        output_basename = '_'.join(output_basename.split('_')[1:])
+        print(output_basename)
     else:
         output_path = os.path.join(output_folder, basename + '.rttm')
         output_basename = os.path.splitext(os.path.basename(output_path))[0]
