@@ -51,9 +51,9 @@ def analyze_wav(filepath):
         statistics :
     """
     basename = os.path.splitext(os.path.basename(filepath))[0]
+
     if os.path.splitext(filepath)[1] == '.wav' and os.path.isfile(filepath):
         fs, data = wavfile.read(filepath)
-
         data_type = type(data[0])
         if data_type == np.int16:
             wav_format = '16-bit PCM'
@@ -128,13 +128,13 @@ def analyze_rttm(filepath, dur_wav):
 
         # Normalization step
         # Normalize participants speech duration by total speech
-        for k, v in dict.items():
-            if k.startswith("% of "):
-                dict["number of participants"] += 1
-                dict[k] /= dict["% total speech"]
-
-        # Normalize % overlap by total speech
-        dict["% overlap"] /= dict["% total speech"]
+        if dict["% total speech"]:
+            for k, v in dict.items():
+                if k.startswith("% of "):
+                    dict["number of participants"] += 1
+                    dict[k] /= dict["% total speech"]
+            # Normalize % overlap by total speech
+            dict["% overlap"] /= dict["% total speech"]
 
         # Normalize total speech by wav duration
         dict["% total speech"] /= dur_wav
@@ -152,7 +152,7 @@ def get_averages(df_path):
             header=header[1:]
 
         lines = file.readlines()
-        rows_of_numbers = [map(float, line.replace('%','').replace('\n','').split('\t')[1:]) for line in lines]
+        rows_of_numbers = [map(float, line.replace('%','').replace('\n','').replace('NA','0.0').split('\t')[1:]) for line in lines]
         sums = map(sum, zip(*rows_of_numbers))
         averages = [sum_item / len(lines) for sum_item in sums]
 

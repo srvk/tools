@@ -36,7 +36,7 @@ class ModelsPage(page.Page):
         self.diar_stats = []
         for df_path in self.df_files:
             basename = os.path.splitext(os.path.basename(df_path))[0]
-            if basename.startswith('diartk'):
+            if basename.startswith(('diartk','lena','yunitator')):
                 self.diar_stats.append(utils.get_averages(df_path))
             else:
                 self.sad_stats.append(utils.get_averages(df_path))

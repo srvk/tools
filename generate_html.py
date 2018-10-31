@@ -4,6 +4,10 @@ Given a list of folders that have been fed to the different models,
 generate a html file presenting the following results :
 
 wip
+
+Use case :
+     python tools/generate_html.py -f data/ -o data/html
+It will scan folder data/ and generates the html interface at data/html.
 """
 
 import argparse

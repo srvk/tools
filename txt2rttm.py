@@ -78,18 +78,20 @@ def txt2rttm(path_to_txt, output_folder, lena_mode=False):
         # Change the output_basename because we don't want to write the model prefix lena_
         # in the rttm fil
         output_basename = '_'.join(output_basename.split('_')[1:])
-        print(output_basename)
     else:
         output_path = os.path.join(output_folder, basename + '.rttm')
         output_basename = os.path.splitext(os.path.basename(output_path))[0]
-
-
 
     with open(path_to_txt, 'r') as txt:
         with open(output_path, 'w') as rttm:
             for line in txt:
                 activity, onset, offset = line.rstrip().split('\t')
-                rttm.write("SPEAKER %s 1 %s %s <NA> <NA> %s <NA>\n" % (output_basename, onset, offset, activity))
+                # In LENA mode, we don't want to write SIL activities
+                if lena_mode and activity in ['CHN','CXN','FAN','MAN','CHF','CXF','FAF','MAF']:
+                    rttm.write("SPEAKER %s 1 %s %s <NA> <NA> %s <NA>\n" % (output_basename, onset, offset, activity))
+                elif not lena_mode:
+                    rttm.write("SPEAKER %s 1 %s %s <NA> <NA> %s <NA>\n" % (output_basename, onset, offset, activity))
+
 
 def main():
     parser = argparse.ArgumentParser(description="convert .txt into .rttm")
