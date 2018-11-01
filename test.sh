@@ -50,7 +50,7 @@ STOP=2813  # 46:53 in seconds
 sox $BASE.mp3 $BASETEST.wav trim $START 5:00 >& /dev/null 2>1
 
 # convert CHA to reliable STM
-/home/vagrant/tools/chat2stm.sh $BASE.cha > $BASE.stm
+/home/vagrant/tools/chat2stm.sh $BASE.cha > $BASE.stm > /dev/null 2>&1
 # convert STM to RTTM as e.g. BN32_010007.rttm
 # shift audio offsets to be 0-relative
 cat $BASE.stm | awk -v start=$START -v stop=$STOP -v file=$BASE -e '{if (($4 > start) && ($4 < stop)) print "SPEAKER",file,"1",($4 - start),($5 - $4),"<NA>","<NA>","<NA>","<NA>","<NA>" }' > $BASETEST.rttm
@@ -64,7 +64,7 @@ if [ -s $LDC_SAD_DIR/perform_sad.py ]; then
     cd $LDC_SAD_DIR
     TESTDIR=$WORKDIR/ldc_sad-test
     mkdir -p $TESTDIR
-    $conda_dir/python perform_sad.py -L $TESTDIR $TEST_WAV > $TESTDIR/ldc_sad.log 2>&1 || (echo "LDC SAD failed - dependencies" && FAILURES=true)
+    $conda_dir/python perform_sad.py -L $TESTDIR $TEST_WAV > $TESTDIR/ldc_sad.log 2>&1 || { echo "LDC SAD failed - dependencies"; FAILURES=true;}
     # convert output to rttm, for diartk.
     grep ' speech' $TESTDIR/$BASETEST.lab | awk -v fname=$base '{print "SPEAKER" " " fname " " 1  " " $1  " " $2-$1 " " "<NA>" " " "<NA>"  " " $3  " "  "<NA>"}'   > $TESTDIR/$BASETEST.rttm
     if [ -s $TESTDIR/$BASETEST.rttm ]; then
@@ -84,7 +84,7 @@ cd $OPENSATDIR
 TESTDIR=$WORKDIR/noisemes-test
 mkdir -p $TESTDIR
 ln -fs $TEST_WAV $TESTDIR
-./runDiarNoisemes.sh $TESTDIR > $TESTDIR/nosiemes-test.log 2>&1 || (echo "Noisemes failed - dependencies" && FAILURES=true)
+./runDiarNoisemes.sh $TESTDIR > $TESTDIR/nosiemes-test.log 2>&1 || { echo "Noisemes failed - dependencies"; FAILURES=true;}
 
 if [ -s $TESTDIR/hyp_sum/$BASETEST.rttm ]; then
     echo "Noisemes passed the test."
@@ -102,7 +102,7 @@ cd $OPENSMILEDIR
 TESTDIR=$WORKDIR/opensmile-test
 mkdir -p $TESTDIR
 ln -fs $TEST_WAV $TESTDIR
-/home/vagrant/tools/opensmile_sad.sh data/VanDam-Daylong/BN32/opensmile-test >$TESTDIR/opensmile-test.log || (echo "OpenSmile SAD failed - dependencies" && FAILURES=true)
+/home/vagrant/tools/opensmile_sad.sh data/VanDam-Daylong/BN32/opensmile-test >$TESTDIR/opensmile-test.log || { echo "OpenSmile SAD failed - dependencies"; FAILURES=true;}
 
 if [ -s $TESTDIR/opensmile_sad_$BASETEST.rttm ]; then
     echo "OpenSmile SAD passed the test."
@@ -117,7 +117,7 @@ cd $TOCOMBOSAD
 TESTDIR=$WORKDIR/tocombo_sad-test
 mkdir -p $TESTDIR
 ln -fs $TEST_WAV $TESTDIR
-/home/vagrant/tools/tocombo_sad.sh data/VanDam-Daylong/BN32/tocombo_sad-test > $TESTDIR/tocombo_sad_test.log 2>&1 || (echo "TOCOMBO SAD failed - dependencies" && FAILURES=true)
+/home/vagrant/tools/tocombo_sad.sh data/VanDam-Daylong/BN32/tocombo_sad-test > $TESTDIR/tocombo_sad_test.log 2>&1 || { echo "TOCOMBO SAD failed - dependencies"; FAILURES=true;}
 
 if [ -s $TESTDIR/tocombo_sad_$BASETEST.rttm ]; then
     echo "TOCOMBO SAD passed the test."
@@ -133,7 +133,7 @@ cd $DIARTKDIR
 TESTDIR=$WORKDIR/diartk-test
 mkdir -p $TESTDIR
 # run like the wind
-./run-rttm.sh $TEST_WAV $TEST_RTTM $TESTDIR > $TESTDIR/diartk-test.log 2>&1 || (echo "Diartk failed - dependencies" && FAILURES=true)
+./run-rttm.sh $TEST_WAV $TEST_RTTM $TESTDIR > $TESTDIR/diartk-test.log 2>&1 || { echo "Diartk failed - dependencies"; FAILURES=true;}
 if [ -s $TESTDIR/$BASETEST.rttm ]; then
     echo "DiarTK passed the test."
 else
@@ -148,7 +148,7 @@ TESTDIR=$WORKDIR/yunitator-test
 mkdir -p $TESTDIR
 ln -fs $TEST_WAV $TESTDIR
 # let 'er rip
-./runYunitator.sh $TESTDIR/$BASETEST.wav > $TESTDIR/yunitator-test.log 2>&1 || (echo "Yunitator failed - dependencies" && FAILURES=true)
+./runYunitator.sh $TESTDIR/$BASETEST.wav > $TESTDIR/yunitator-test.log 2>&1 || { echo "Yunitator failed - dependencies"; FAILURES=true;}
 if [ -s $TESTDIR/Yunitemp/$BASETEST.rttm ]; then
     echo "Yunitator passed the test."
 else
@@ -164,11 +164,12 @@ TESTDIR=$WORKDIR/dscore-test
 mkdir -p $TESTDIR
 cp -r test_ref test_sys $TESTDIR
 rm -f test.df
-python score_batch.py $TESTDIR/test.df $TESTDIR/test_ref $TESTDIR/test_sys > $TESTDIR/dscore-test.log ||  (echo "Dscore failed - dependencies" && FAILURES=true)
+python score_batch.py $TESTDIR/test.df $TESTDIR/test_ref $TESTDIR/test_sys > $TESTDIR/dscore-test.log ||  { echo "Dscore failed - dependencies"; FAILURES=true;}
 if diff -q $TESTDIR/test.df ref.df; then
     echo "DScore passed the test."
 else
     echo "DScore failed the test - output does not match expected"
+    FAILURES=true
 fi
 
 
@@ -177,11 +178,12 @@ echo "Testing LDC evalSAD"
 cd $LDC_SAD_DIR
 TESTDIR=$WORKDIR/opensmile-test
 cp $WORKDIR/$BASETEST.rttm $TESTDIR
-~/tools/eval.sh $DATADIR/opensmile-test opensmile > $WORKDIR/ldc_sad-test/ldc_evalSAD.log 2>&1 || (echo "LDC evalSAD failed - dependencies" && FAILURES=true)
+~/tools/eval.sh $DATADIR/opensmile-test opensmile > $WORKDIR/ldc_sad-test/ldc_evalSAD.log 2>&1 || { echo "LDC evalSAD failed - dependencies"; FAILURES=true;}
 if [ -s $TESTDIR/opensmile_sad_eval.df ]; then
     echo "LDC evalSAD passed the test"
 else
     echo "LDC evalSAD failed - no output .df"
+    FAILURES=true
 fi
 
 
