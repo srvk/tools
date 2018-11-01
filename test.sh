@@ -29,6 +29,9 @@ YUNITATORDIR=$(dirname $BASEDIR)/Yunitator
 
 FAILURES=false
 
+echo "Starting tests"
+echo "Downloading test audio..."
+
 cd /vagrant/data
 # get transcript
 wget -q -N https://homebank.talkbank.org/data/Public/VanDam-Daylong.zip
@@ -50,7 +53,7 @@ STOP=2813  # 46:53 in seconds
 sox $BASE.mp3 $BASETEST.wav trim $START 5:00 >& /dev/null 2>1
 
 # convert CHA to reliable STM
-/home/vagrant/tools/chat2stm.sh $BASE.cha > $BASE.stm > /dev/null 2>&1
+/home/vagrant/tools/chat2stm.sh $BASE.cha > $BASE.stm 2>/dev/null
 # convert STM to RTTM as e.g. BN32_010007.rttm
 # shift audio offsets to be 0-relative
 cat $BASE.stm | awk -v start=$START -v stop=$STOP -v file=$BASE -e '{if (($4 > start) && ($4 < stop)) print "SPEAKER",file,"1",($4 - start),($5 - $4),"<NA>","<NA>","<NA>","<NA>","<NA>" }' > $BASETEST.rttm
@@ -58,23 +61,32 @@ TEST_RTTM=$WORKDIR/$BASETEST.rttm
 TEST_WAV=$WORKDIR/$BASETEST.wav
 
 
+# Check for HTK
+echo "Checking for HTK..."
+if [ -s /usr/local/bin/HCopy ]; then
+    echo "HTK is installed."
+else
+    echo "   HTK missing; did you first download HTK-3.4.1 from http://htk.eng.cam.ac.uk/download.shtml"
+    echo "   and rename it to HTK.tar.gz ?"
+fi
+
 # First test in ldc_sad_hmm
 echo "Testing LDC SAD..."
 if [ -s $LDC_SAD_DIR/perform_sad.py ]; then
     cd $LDC_SAD_DIR
     TESTDIR=$WORKDIR/ldc_sad-test
-    mkdir -p $TESTDIR
-    $conda_dir/python perform_sad.py -L $TESTDIR $TEST_WAV > $TESTDIR/ldc_sad.log 2>&1 || { echo "LDC SAD failed - dependencies"; FAILURES=true;}
+    rm -rf $TESTDIR; mkdir -p $TESTDIR
+    $conda_dir/python perform_sad.py -L $TESTDIR $TEST_WAV > $TESTDIR/ldc_sad.log 2>&1 || { echo "   LDC SAD failed - dependencies"; FAILURES=true;}
     # convert output to rttm, for diartk.
     grep ' speech' $TESTDIR/$BASETEST.lab | awk -v fname=$base '{print "SPEAKER" " " fname " " 1  " " $1  " " $2-$1 " " "<NA>" " " "<NA>"  " " $3  " "  "<NA>"}'   > $TESTDIR/$BASETEST.rttm
     if [ -s $TESTDIR/$BASETEST.rttm ]; then
 	echo "LDC SAD passed the test."
     else
 	FAILURES=true
-	echo "LDC SAD failed - no output RTTM"
+	echo "   LDC SAD failed - no output RTTM"
     fi
 else
-    echo "LDC SAD failed because the code for LDC SAD is missing. This is normal, as we are still awaiting the official release!"
+    echo "   LDC SAD failed because the code for LDC SAD is missing. This is normal, as we are still awaiting the official release!"
 fi
 
 
@@ -82,15 +94,15 @@ fi
 echo "Testing noisemes..."
 cd $OPENSATDIR
 TESTDIR=$WORKDIR/noisemes-test
-mkdir -p $TESTDIR
+rm -rf $TESTDIR; mkdir -p $TESTDIR
 ln -fs $TEST_WAV $TESTDIR
-./runDiarNoisemes.sh $TESTDIR > $TESTDIR/nosiemes-test.log 2>&1 || { echo "Noisemes failed - dependencies"; FAILURES=true;}
+./runDiarNoisemes.sh $TESTDIR > $TESTDIR/nosiemes-test.log 2>&1 || { echo "   Noisemes failed - dependencies"; FAILURES=true;}
 
 if [ -s $TESTDIR/hyp_sum/$BASETEST.rttm ]; then
     echo "Noisemes passed the test."
 else
     FAILURES=true
-    echo "Noisemes failed - no RTTM output"
+    echo "   Noisemes failed - no RTTM output"
 fi
 # clean up
 rm -rf $OPENSATDIR/SSSF/data/feature $OPENSATDIR/SSSF/data/hyp
@@ -100,30 +112,30 @@ rm -rf $OPENSATDIR/SSSF/data/feature $OPENSATDIR/SSSF/data/hyp
 echo "Testing OpenSmile SAD..."
 cd $OPENSMILEDIR
 TESTDIR=$WORKDIR/opensmile-test
-mkdir -p $TESTDIR
+rm -rf $TESTDIR; mkdir -p $TESTDIR
 ln -fs $TEST_WAV $TESTDIR
-/home/vagrant/tools/opensmile_sad.sh data/VanDam-Daylong/BN32/opensmile-test >$TESTDIR/opensmile-test.log || { echo "OpenSmile SAD failed - dependencies"; FAILURES=true;}
+/home/vagrant/tools/opensmile_sad.sh data/VanDam-Daylong/BN32/opensmile-test >$TESTDIR/opensmile-test.log || { echo "   OpenSmile SAD failed - dependencies"; FAILURES=true;}
 
 if [ -s $TESTDIR/opensmile_sad_$BASETEST.rttm ]; then
     echo "OpenSmile SAD passed the test."
 else
     FAILURES=true
-    echo "OpenSmile SAD failed - no RTTM output"
+    echo "   OpenSmile SAD failed - no RTTM output"
 fi
 
 # now test TOCOMBOSAD
 echo "Testing ToCombo SAD..."
 cd $TOCOMBOSAD
 TESTDIR=$WORKDIR/tocombo_sad-test
-mkdir -p $TESTDIR
+rm -rf $TESTDIR; mkdir -p $TESTDIR
 ln -fs $TEST_WAV $TESTDIR
-/home/vagrant/tools/tocombo_sad.sh data/VanDam-Daylong/BN32/tocombo_sad-test > $TESTDIR/tocombo_sad_test.log 2>&1 || { echo "TOCOMBO SAD failed - dependencies"; FAILURES=true;}
+/home/vagrant/tools/tocombo_sad.sh data/VanDam-Daylong/BN32/tocombo_sad-test > $TESTDIR/tocombo_sad_test.log 2>&1 || { echo "   TOCOMBO SAD failed - dependencies"; FAILURES=true;}
 
 if [ -s $TESTDIR/tocombo_sad_$BASETEST.rttm ]; then
     echo "TOCOMBO SAD passed the test."
 else
     FAILURES=true
-    echo "TOCOMBO SAD failed - no output RTTM"
+    echo "   TOCOMBO SAD failed - no output RTTM"
 fi
 
 
@@ -131,29 +143,34 @@ fi
 echo "Testing DIARTK..."
 cd $DIARTKDIR
 TESTDIR=$WORKDIR/diartk-test
-mkdir -p $TESTDIR
+rm -rf $TESTDIR; mkdir -p $TESTDIR
 # run like the wind
-./run-rttm.sh $TEST_WAV $TEST_RTTM $TESTDIR > $TESTDIR/diartk-test.log 2>&1 || { echo "Diartk failed - dependencies"; FAILURES=true;}
-if [ -s $TESTDIR/$BASETEST.rttm ]; then
-    echo "DiarTK passed the test."
-else
+./run-rttm.sh $TEST_WAV $TEST_RTTM $TESTDIR > $TESTDIR/diartk-test.log 2>&1
+if grep -q "command not found" $TESTDIR/diartk-test.log; then
+    echo "   Diartk failed - dependencies (probably HTK)"
     FAILURES=true
-    echo "Diartk failed - no output RTTM"
+else
+    if [ -s $TESTDIR/$BASETEST.rttm ]; then
+	echo "DiarTK passed the test."
+    else
+	FAILURES=true
+	echo "   Diartk failed - no output RTTM"
+    fi
 fi
 
 # finally test Yunitator
 echo "Testing Yunitator..."
 cd $YUNITATORDIR
 TESTDIR=$WORKDIR/yunitator-test
-mkdir -p $TESTDIR
+rm -rf $TESTDIR; mkdir -p $TESTDIR
 ln -fs $TEST_WAV $TESTDIR
 # let 'er rip
-./runYunitator.sh $TESTDIR/$BASETEST.wav > $TESTDIR/yunitator-test.log 2>&1 || { echo "Yunitator failed - dependencies"; FAILURES=true;}
+./runYunitator.sh $TESTDIR/$BASETEST.wav > $TESTDIR/yunitator-test.log 2>&1 || { echo "   Yunitator failed - dependencies"; FAILURES=true;}
 if [ -s $TESTDIR/Yunitemp/$BASETEST.rttm ]; then
     echo "Yunitator passed the test."
 else
     FAILURES=true
-    echo "Yunitator failed - no output RTTM"
+    echo "   Yunitator failed - no output RTTM"
 fi
 
 
@@ -161,14 +178,14 @@ fi
 echo "Testing Dscore..."
 cd $DSCOREDIR
 TESTDIR=$WORKDIR/dscore-test
-mkdir -p $TESTDIR
+rm -rf $TESTDIR; mkdir -p $TESTDIR
 cp -r test_ref test_sys $TESTDIR
 rm -f test.df
-python score_batch.py $TESTDIR/test.df $TESTDIR/test_ref $TESTDIR/test_sys > $TESTDIR/dscore-test.log ||  { echo "Dscore failed - dependencies"; FAILURES=true;}
+python score_batch.py $TESTDIR/test.df $TESTDIR/test_ref $TESTDIR/test_sys > $TESTDIR/dscore-test.log ||  { echo "   Dscore failed - dependencies"; FAILURES=true;}
 if [ -s $TESTDIR/test.df ]; then
     echo "DScore passed the test."
 else
-    echo "DScore failed the test - output does not match expected"
+    echo "   DScore failed the test - output does not match expected"
     FAILURES=true
 fi
 
@@ -179,15 +196,15 @@ if [ -d $LDC_SAD_DIR ]; then
     cd $LDC_SAD_DIR
     TESTDIR=$WORKDIR/opensmile-test
     cp $WORKDIR/$BASETEST.rttm $TESTDIR
-    ~/tools/eval.sh $DATADIR/opensmile-test opensmile > $WORKDIR/ldc_sad-test/ldc_evalSAD.log 2>&1 || { echo "LDC evalSAD failed - dependencies"; FAILURES=true;}
+    ~/tools/eval.sh $DATADIR/opensmile-test opensmile > $WORKDIR/ldc_sad-test/ldc_evalSAD.log 2>&1 || { echo "   LDC evalSAD failed - dependencies"; FAILURES=true;}
     if [ -s $TESTDIR/opensmile_sad_eval.df ]; then
 	echo "LDC evalSAD passed the test"
     else
-	echo "LDC evalSAD failed - no output .df"
+	echo "   LDC evalSAD failed - no output .df"
 	FAILURES=true
     fi
 else
-    echo "LDC evalSAD failed because the code for LDC SAD is missing. This is normal, as we are still awaiting the official release!"
+    echo "   LDC evalSAD failed because the code for LDC SAD is missing. This is normal, as we are still awaiting the official release!"
     FAILURES=true
 fi
 
