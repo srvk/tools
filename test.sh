@@ -175,14 +175,19 @@ fi
 
 # testing LDC evalSAD (on opensmile)
 echo "Testing LDC evalSAD"
-cd $LDC_SAD_DIR
-TESTDIR=$WORKDIR/opensmile-test
-cp $WORKDIR/$BASETEST.rttm $TESTDIR
-~/tools/eval.sh $DATADIR/opensmile-test opensmile > $WORKDIR/ldc_sad-test/ldc_evalSAD.log 2>&1 || { echo "LDC evalSAD failed - dependencies"; FAILURES=true;}
-if [ -s $TESTDIR/opensmile_sad_eval.df ]; then
-    echo "LDC evalSAD passed the test"
+if [ -d $LDC_SAD_DIR ]; then
+    cd $LDC_SAD_DIR
+    TESTDIR=$WORKDIR/opensmile-test
+    cp $WORKDIR/$BASETEST.rttm $TESTDIR
+    ~/tools/eval.sh $DATADIR/opensmile-test opensmile > $WORKDIR/ldc_sad-test/ldc_evalSAD.log 2>&1 || { echo "LDC evalSAD failed - dependencies"; FAILURES=true;}
+    if [ -s $TESTDIR/opensmile_sad_eval.df ]; then
+	echo "LDC evalSAD passed the test"
+    else
+	echo "LDC evalSAD failed - no output .df"
+	FAILURES=true
+    fi
 else
-    echo "LDC evalSAD failed - no output .df"
+    echo "LDC evalSAD failed because the code for LDC SAD is missing. This is normal, as we are still awaiting the official release!"
     FAILURES=true
 fi
 
