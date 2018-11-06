@@ -57,10 +57,11 @@ done
 # Remove the model_prefix of it
 mkdir $audio_dir/temp_sys
 for rttm in `ls $audio_dir/${model_prefix}_*.rttm`; do
-    base=$(basename $rttm)
+    base=$(basename $rttm .rttm)
     out=`echo $base | sed "s/${model_prefix}\_//g"`
     cp $rttm $audio_dir/temp_sys/$out
     if [ $create_lab == true ]; then
+	echo "creating: " $audio_dir/temp_sys/${out}.lab
         awk '{print $4" "($4+$5)" speech"}' $rttm > $audio_dir/temp_sys/${out}.lab
     fi
 done
