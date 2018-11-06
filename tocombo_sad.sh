@@ -5,13 +5,13 @@
 source ~/.bashrc
 conda_dir=/home/vagrant/anaconda/bin
 
-# run OpenSAT with hard coded models & configs found here and in /vagrant
+# run ToComboSAD with hard coded models & configs found here and in /vagrant
 
 # Absolute path to this script. /home/user/bin/foo.sh
 SCRIPT=$(readlink -f $0)
 # Absolute path this script is in. /home/user/bin
 BASEDIR=`dirname $SCRIPT`
-# Path to OpenSAT (go on folder up and to opensat)
+# Path to ToComboSAD (go on folder up and to ToComboSAD)
 TOCOMBOSADDIR=$(dirname $BASEDIR)/To-Combo-SAD
 
 if [ $# -ne 1 ]; then
@@ -30,7 +30,7 @@ basename="${filename%.*}"
 # Check audio_dir to see if empty or if contains empty wav
 bash $BASEDIR/check_folder.sh $audio_dir
 
-# let's get our bearings: set CWD to path of OpenSAT
+# let's get our bearings: set CWD to path of ToComboSAD
 cd $TOCOMBOSADDIR
 
 mkdir -p $audio_dir/feat
