@@ -49,7 +49,7 @@ for sad in `ls $audio_dir/Yunitemp/*.rttm`; do
     _rttm=$(basename $sad)
     rttm=$audio_dir/yunitator_${_rttm}
     # Remove not needed SIL lines
-    sed -i '/ SIL /d' $sad
+    # sed -i '/ SIL /d' $sad
     mv $sad $rttm
 done
 
