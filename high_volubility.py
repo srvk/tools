@@ -270,13 +270,23 @@ def read_analyses(temp_abs, sad, perc, diar=None, mode='CHI', child_aware=False)
             silence_dur = 0.0
             # type of the last activity
             previous_activity = None
+            onset_prev = 0.0
+            dur_prev = 0.0
             # variable to detect if the child is aware in ACCA mode.
             chi_points = 0.0
 
             for line in speech_activity:
                 anno_fields = line.split(' ')
                 dur = float(anno_fields[4])
+                onset = float(anno_fields[3])
                 curr_activity = anno_fields[7]
+
+
+                if onset_prev+dur_prev == onset:
+                    silence_dur = 0.0
+                else:
+                    silence_dur = onset-onset_prev-dur_prev
+
 
                 if not diar_mode:                                               # SAD mode
                     tot_dur += dur
@@ -295,12 +305,9 @@ def read_analyses(temp_abs, sad, perc, diar=None, mode='CHI', child_aware=False)
                     elif curr_activity == 'CHI':
                         chi_points += 1
 
-                # Reset silence_dur variable + store previous activity (if not silence)
-                if curr_activity != 'SIL':
-                    previous_activity = curr_activity
-                    silence_dur = 0.0
-                else:
-                    silence_dur = dur
+                previous_activity = curr_activity
+                onset_prev = onset
+                dur_prev = dur
 
             files_n_dur.append((base, tot_dur, chi_points))
 
