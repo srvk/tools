@@ -14,7 +14,7 @@ conda_dir=/home/vagrant/anaconda/bin
 
 # Absolute path to this script. /home/user/bin/foo.sh
 SCRIPT=$(readlink -f $0)
-# Absolute path this script is in. /home/user/bin
+# Absolute path this script is in. /home/vagrant/tools
 BASEDIR=`dirname $SCRIPT`
 
 # Paths to Tools
@@ -66,7 +66,7 @@ if [ -s $LDC_SAD_DIR/perform_sad.py ]; then
     mkdir -p $TESTDIR
     $conda_dir/python perform_sad.py -L $TESTDIR $TEST_WAV > $TESTDIR/ldc_sad.log 2>&1 || (echo "LDC SAD failed - dependencies" && FAILURES=true)
     # convert output to rttm, for diartk.
-    grep ' speech' $TESTDIR/$BASETEST.lab | awk -v fname=$base '{print "SPEAKER" " " fname " " 1  " " $1  " " $2-$1 " " "<NA>" " " "<NA>"  " " $3  " "  "<NA>"}'   > $TESTDIR/$BASETEST.rttm
+    grep ' speech' $TESTDIR/$BASETEST.lab | awk -v fname=$BASE '{print "SPEAKER" " " fname " " 1  " " $1  " " $2-$1 " " "<NA>" " " "<NA>"  " " $3  " "  "<NA>"}'   > $TESTDIR/$BASETEST.rttm
     if [ -s $TESTDIR/$BASETEST.rttm ]; then
 	echo "LDC SAD passed the test."
     else
@@ -85,6 +85,7 @@ TESTDIR=$WORKDIR/noisemes-test
 mkdir -p $TESTDIR
 ln -fs $TEST_WAV $TESTDIR
 ./runDiarNoisemes.sh $TESTDIR > $TESTDIR/nosiemes-test.log 2>&1 || (echo "Noisemes failed - dependencies" && FAILURES=true)
+cp $TESTDIR/hyp_sum/$BASETEST.rttm $TESTDIR
 
 if [ -s $TESTDIR/hyp_sum/$BASETEST.rttm ]; then
     echo "Noisemes passed the test."
@@ -102,7 +103,7 @@ cd $OPENSMILEDIR
 TESTDIR=$WORKDIR/opensmile-test
 mkdir -p $TESTDIR
 ln -fs $TEST_WAV $TESTDIR
-/home/vagrant/tools/opensmile_sad.sh data/VanDam-Daylong/BN32/opensmile-test >$TESTDIR/opensmile-test.log || (echo "OpenSmile SAD failed - dependencies" && FAILURES=true)
+/home/vagrant/tools/opensmile_sad.sh $DATADIR/opensmile-test >$TESTDIR/opensmile-test.log || (echo "OpenSmile SAD failed - dependencies" && FAILURES=true)
 
 if [ -s $TESTDIR/opensmile_sad_$BASETEST.rttm ]; then
     echo "OpenSmile SAD passed the test."
@@ -117,7 +118,7 @@ cd $TOCOMBOSAD
 TESTDIR=$WORKDIR/tocombo_sad-test
 mkdir -p $TESTDIR
 ln -fs $TEST_WAV $TESTDIR
-/home/vagrant/tools/tocombo_sad.sh data/VanDam-Daylong/BN32/tocombo_sad-test > $TESTDIR/tocombo_sad_test.log 2>&1 || (echo "TOCOMBO SAD failed - dependencies" && FAILURES=true)
+/home/vagrant/tools/tocombo_sad.sh $DATADIR/tocombo_sad-test > $TESTDIR/tocombo_sad_test.log 2>&1 || (echo "TOCOMBO SAD failed - dependencies" && FAILURES=true)
 
 if [ -s $TESTDIR/tocombo_sad_$BASETEST.rttm ]; then
     echo "TOCOMBO SAD passed the test."
@@ -177,7 +178,9 @@ echo "Testing LDC evalSAD"
 cd $LDC_SAD_DIR
 TESTDIR=$WORKDIR/opensmile-test
 cp $WORKDIR/$BASETEST.rttm $TESTDIR
-~/tools/eval.sh $DATADIR/opensmile-test opensmile > $WORKDIR/ldc_sad-test/ldc_evalSAD.log 2>&1 || (echo "LDC evalSAD failed - dependencies" && FAILURES=true)
+~/tools/eval.sh $TESTDIR opensmile > $WORKDIR/ldc_sad-test/ldc_evalSAD.log 2>&1 || (echo "LDC evalSAD failed - dependencies" && FAILURES=true)
+# clean up
+rm $TESTDIR/$BASETEST.rttm
 if [ -s $TESTDIR/opensmile_sad_eval.df ]; then
     echo "LDC evalSAD passed the test"
 else
@@ -191,3 +194,11 @@ if $FAILURES; then
 else
     echo "Congratulations, everything is OK!"
 fi
+
+# results
+echo "RESULTS:"
+for f in /vagrant/$DATADIR/*-test/*.rttm; do $BASEDIR/sum-rttm.sh $f; done
+echo "DSCORE:"
+cat /vagrant/data/VanDam-Daylong/BN32/dscore-test/test.df
+echo "EVAL_SAD:"
+cat $TESTDIR/opensmile_sad_eval.df
