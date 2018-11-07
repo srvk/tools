@@ -21,12 +21,13 @@ display_usage() {
     echo "Model choices are :"
     echo "  - diartk"
     echo "  - yunitate"
-    echo "Transcription (for model == diartk) choices are:"
+    echo "  - yuniSeg"
+    echo "Transcription (mandatory for model == diartk|yuniSeg) choices are:"
     echo "  -ldc_sad"
     echo "  -noisemes"
-    echo "  -textgrid"
     echo "  -opensmile"
     echo "  -tocombosad"
+    echo "  -textgrid"
     echo "  -eaf"
     echo "  -rttm"
     exit 1;
@@ -48,37 +49,38 @@ basename="${filename%.*}"
 # Set CWD to path of Dscore
 cd $DSCOREDIR
 
-if [ "$2" == "diartk" ]; then
+model=$2
+if [[ $model =~ ^(diartk|yuniseg) ]]; then
     trs_format=$3
     case $trs_format in
       "ldc_sad")
-       sys_name="diartk_ldcSad"
+       sys_name=$model"_ldcSad"
       ;;
       "noisemes")
-       sys_name="diartk_noisemesSad"
+       sys_name=$model"_noisemesSad"
       ;;
       "tocombosad")
-       sys_name="diartk_tocomboSad"
+       sys_name=$model"_tocomboSad"
       ;;
       "opensmile")
-       sys_name="diartk_opensmileSad"
+       sys_name=$model"_opensmileSad"
       ;;
       "textgrid")
-       sys_name="diartk_goldSad"
+       sys_name=$model"_goldSad"
        for wav in `ls $audio_dir/*.wav`; do
            base=$(basename $wav .wav)
            $conda_dir/python /home/vagrant/varia/textgrid2rttm.py $audio_dir/${basename}.TextGrid $audio_dir/${basename}.rttm
        done
       ;;
       "eaf")
-        sys_name="goldSad"
+        sys_name=$model"_goldSad"
        for wav in `ls $audio_dir/*.wav`; do
            base=$(basename $wav .wav)
            $conda_dir/python /home/vagrant/varia/elan2rttm.py $audio_dir/${basename}.eaf $audio_dir/${basename}.rttm
        done
        ;;
        "rttm")
-        sys_name="goldSad"
+        sys_name=$model"_goldSad"
        ;;
        *)
         echo "ERROR: You're trying to evaluate diartk, but the transcription system you specified is not recognized :"

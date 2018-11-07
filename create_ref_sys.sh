@@ -28,10 +28,11 @@ if [ -z "$3" ]; then
     create_lab=false
 fi
 
-if ! [[ $model_prefix =~ ^(ldc_sad|noisemes_sad|tocombo_sad|opensmile_sad|lena_sad|
-                            diartk_ldcSad|diartk_noisemesSad|diartk_tocomboSad|diartk_opensmileSad|
-                            diartk_goldSad|goldSad|yunitator|lena)$ ]]; then
-    echo "You're trying to create folder containing the reference transcriptions, and the predicted ones."
+
+if ! [[ $model_prefix =~ ^(ldc_sad|noisemes_sad|tocombo_sad|opensmile_sad|lena_sad|lena|yunitator|\
+diartk_ldcSad|diartk_noisemesSad|diartk_tocomboSad|diartk_opensmileSad|diartk_goldSad|\
+yuniseg_ldcSad|yuniseg_noisemesSad|yuniseg_tocomboSad|yuniseg_opensmileSad|yuniseg_goldSad)$ ]]; then
+    echo "You're trying to create folders containing the reference transcriptions, and the predicted ones."
     echo "However, you specified a wrong tool name."
     echo "Please, check the name of the SAD/diarization tool."
     exit 1;
@@ -59,7 +60,7 @@ mkdir $audio_dir/temp_sys
 for rttm in `ls $audio_dir/${model_prefix}_*.rttm`; do
     base=$(basename $rttm .rttm)
     out=`echo $base | sed "s/${model_prefix}\_//g"`
-    cp $rttm $audio_dir/temp_sys/$out
+    cp $rttm $audio_dir/temp_sys/${out}.rttm
     if [ $create_lab == true ]; then
 	echo "creating: " $audio_dir/temp_sys/${out}.lab
         awk '{print $4" "($4+$5)" speech"}' $rttm > $audio_dir/temp_sys/${out}.lab

@@ -19,8 +19,9 @@ display_usage() {
     echo "  opensmile"
     echo "  diartk"
     echo "  yunitate"
-    echo "If evaluating diartk, please give which flavour"
-    echo "of SAD you used to produce the diartk transcription"
+    echo "  yuniseg"
+    echo "If evaluating diartk or yuniseg, please give which flavour"
+    echo "of SAD you used to produce the transcription"
     echo "you want to evaluate"
     exit 1
 }
@@ -40,7 +41,7 @@ case $system in
 "yunitate"|"lena")
    sh $BASEDIR/evalDiar.sh $audio_dir $system
    ;;
-"diartk")
+"diartk"|"yuniseg")
    sad=$3
    sh $BASEDIR/evalDiar.sh $audio_dir $system $sad
    ;;
