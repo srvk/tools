@@ -56,33 +56,40 @@ for f in `ls $audio_dir/*.wav`; do
     case $trs_format in
       "ldc_sad")
        sys="ldcSad"
+       model_prefix="ldc_sad_"
       ;;
       "")
        # add default case
        echo "Warning: no SAD source specified, using Noisemes by default, at your own risk."
        echo "Next time, please specify SAD."
        sys="noisemesSad"
+       model_prefix="noisemes_sad_"
       ;;
       "noisemes")
        sys="noisemesSad"
+       model_prefix="noisemes_sad_"
       ;;
       "tocombosad")
        sys="tocomboSad"
+       model_prefix="tocombo_sad_"
       ;;
       "opensmile")
        sys="opensmileSad"
+       model_prefix="opensmile_sad_"
       ;;
       "textgrid") 
        sys="goldSad"
-       $conda_dir/python /home/vagrant/varia/textgrid2rttm.py $audio_dir/${basename}.TextGrid $trs_format_${basename}.rttm
+       model_prefix=${trs_format}_
+       $conda_dir/python /home/vagrant/varia/textgrid2rttm.py $audio_dir/${basename}.TextGrid ${trs_format}_${basename}.rttm
       ;;
       "eaf")
        sys="goldSad"
-       $conda_dir/python /home/vagrant/varia/elan2rttm.py $audio_dir/${basename}.eaf $trs_format_${basename}.rttm
+       model_prefix=${trs_format}_
+       $conda_dir/python /home/vagrant/varia/elan2rttm.py $audio_dir/${basename}.eaf ${trs_format}_${basename}.rttm
       ;;
       "rttm")
        sys="goldSad"
-       cp $audio_dir/${basename}.rttm $trs_format_${basename}.rttm
+       model_prefix=""
       ;;
       *)
        echo "ERROR: please choose SAD system between:"
@@ -98,7 +105,7 @@ for f in `ls $audio_dir/*.wav`; do
       ;;
     esac
 
-    ./runYuniSegs.sh $f $audio_dir/$trs_format_${basename}.rttm
+    ./runYuniSegs.sh $f $audio_dir/${model_prefix}${basename}.rttm
     cp $outfile $audio_dir/yuniseg_${sys}_${basename}.rttm
 
     if [ ! -s $audio_dir/yuniseg_${sys}_${basename}.rttm ]; then
@@ -110,4 +117,5 @@ done
 echo "$0 finished running"
 
 # simply remove hyp and feature
+rm $outfile
 rm -rf $audio_dir/Yunitemp
