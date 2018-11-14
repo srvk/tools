@@ -96,12 +96,7 @@ cd $OPENSATDIR
 TESTDIR=$WORKDIR/noisemes-test
 rm -rf $TESTDIR; mkdir -p $TESTDIR
 ln -fs $TEST_WAV $TESTDIR
-<<<<<<< HEAD
-./runDiarNoisemes.sh $TESTDIR > $TESTDIR/nosiemes-test.log 2>&1 || (echo "Noisemes failed - dependencies" && FAILURES=true)
-cp $TESTDIR/hyp_sum/$BASETEST.rttm $TESTDIR
-=======
 ./runDiarNoisemes.sh $TESTDIR > $TESTDIR/nosiemes-test.log 2>&1 || { echo "   Noisemes failed - dependencies"; FAILURES=true;}
->>>>>>> 053a3d0b196066a04d60bf41fbc2b62843374814
 
 if [ -s $TESTDIR/hyp_sum/$BASETEST.rttm ]; then
     echo "Noisemes passed the test."
@@ -119,11 +114,7 @@ cd $OPENSMILEDIR
 TESTDIR=$WORKDIR/opensmile-test
 rm -rf $TESTDIR; mkdir -p $TESTDIR
 ln -fs $TEST_WAV $TESTDIR
-<<<<<<< HEAD
-/home/vagrant/tools/opensmile_sad.sh $DATADIR/opensmile-test >$TESTDIR/opensmile-test.log || (echo "OpenSmile SAD failed - dependencies" && FAILURES=true)
-=======
 /home/vagrant/tools/opensmile_sad.sh data/VanDam-Daylong/BN32/opensmile-test >$TESTDIR/opensmile-test.log || { echo "   OpenSmile SAD failed - dependencies"; FAILURES=true;}
->>>>>>> 053a3d0b196066a04d60bf41fbc2b62843374814
 
 if [ -s $TESTDIR/opensmile_sad_$BASETEST.rttm ]; then
     echo "OpenSmile SAD passed the test."
@@ -138,11 +129,7 @@ cd $TOCOMBOSAD
 TESTDIR=$WORKDIR/tocombo_sad-test
 rm -rf $TESTDIR; mkdir -p $TESTDIR
 ln -fs $TEST_WAV $TESTDIR
-<<<<<<< HEAD
-/home/vagrant/tools/tocombo_sad.sh $DATADIR/tocombo_sad-test > $TESTDIR/tocombo_sad_test.log 2>&1 || (echo "TOCOMBO SAD failed - dependencies" && FAILURES=true)
-=======
 /home/vagrant/tools/tocombo_sad.sh data/VanDam-Daylong/BN32/tocombo_sad-test > $TESTDIR/tocombo_sad_test.log 2>&1 || { echo "   TOCOMBO SAD failed - dependencies"; FAILURES=true;}
->>>>>>> 053a3d0b196066a04d60bf41fbc2b62843374814
 
 if [ -s $TESTDIR/tocombo_sad_$BASETEST.rttm ]; then
     echo "TOCOMBO SAD passed the test."
@@ -205,16 +192,6 @@ fi
 
 # testing LDC evalSAD (on opensmile)
 echo "Testing LDC evalSAD"
-<<<<<<< HEAD
-cd $LDC_SAD_DIR
-TESTDIR=$WORKDIR/opensmile-test
-cp $WORKDIR/$BASETEST.rttm $TESTDIR
-~/tools/eval.sh $TESTDIR opensmile > $WORKDIR/ldc_sad-test/ldc_evalSAD.log 2>&1 || (echo "LDC evalSAD failed - dependencies" && FAILURES=true)
-# clean up
-rm $TESTDIR/$BASETEST.rttm
-if [ -s $TESTDIR/opensmile_sad_eval.df ]; then
-    echo "LDC evalSAD passed the test"
-=======
 if [ -d $LDC_SAD_DIR ]; then
     cd $LDC_SAD_DIR
     TESTDIR=$WORKDIR/opensmile-test
@@ -226,7 +203,6 @@ if [ -d $LDC_SAD_DIR ]; then
 	echo "   LDC evalSAD failed - no output .df"
 	FAILURES=true
     fi
->>>>>>> 053a3d0b196066a04d60bf41fbc2b62843374814
 else
     echo "   LDC evalSAD failed because the code for LDC SAD is missing. This is normal, as we are still awaiting the official release!"
     FAILURES=true
