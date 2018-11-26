@@ -2,8 +2,8 @@
 # Since the script is built to be launched outside of the vm, source
 # the .bashrc which is not necessarily sourced!
 source ~/.bashrc
-conda_dir=/home/vagrant/anaconda/bin
-# conda_dir=/home/vagrant/miniconda3/bin
+# conda_dir=/home/vagrant/anaconda/bin
+conda_dir=/home/vagrant/anaconda3/bin
 
 # run OpenSAT with hard coded models & configs found here and in /vagrant
 # assumes Python environment in /home/${user}/
