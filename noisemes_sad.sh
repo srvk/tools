@@ -4,6 +4,7 @@
 # the .bashrc which is not necessarily sourced!
 source ~/.bashrc
 conda_dir=/home/vagrant/anaconda/bin
+# conda_dir=/home/vagrant/miniconda3/bin
 
 # run OpenSAT with hard coded models & configs found here and in /vagrant
 
@@ -45,7 +46,9 @@ done
 # then confidences
 #python SSSF/code/predict/1-confidence-vm3.py $1
 echo "detecting speech and non speech segments"
-$conda_dir/python SSSF/code/predict/1-confidence-vm5.py $audio_dir
+
+$conda_dir/python /home/vagrant/Yunified/yunified.py noisemes $audio_dir
+
 echo "finished detecting speech and non speech segments"
 
 # take all the .rttm in /vagrant/data/hyp and move them to /vagrant/data - move features and hyp to another folder also.
@@ -53,7 +56,7 @@ for sad in `ls $audio_dir/hyp_sum/*.lab`; do
     base=$(basename $sad .lab)
     rttm_out=noisemes_sad_${base}.rttm
    if [ -s $sad ]; then 
-       grep ' speech' $sad | awk -v fname=$base '{print "SPEAKER" "  " fname " " 1  " " $1  " " $2-$1 " " "<NA>" " " "<NA>"  " " $3  " "  "<NA>"}'   > $audio_dir/$rttm_out
+       grep ' speech' $sad | awk -v fname=$base '{print "SPEAKER" "\t" fname "\t" 1  "\t" $1  "\t" $2-$1 "\t" "<NA>" "\t" "<NA>"  "\t" $3  "\t"  "<NA>"}'   > $audio_dir/$rttm_out
    else
        touch $audio_dir/$rttm_out
    fi
