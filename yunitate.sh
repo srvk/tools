@@ -3,6 +3,7 @@
 # the .bashrc which is not necessarily sourced!
 source ~/.bashrc
 conda_dir=/home/vagrant/anaconda/bin
+# conda_dir=/home/vagrant/miniconda3/bin
 
 # run OpenSAT with hard coded models & configs found here and in /vagrant
 # assumes Python environment in /home/${user}/
@@ -38,20 +39,16 @@ cd $YUNITATDIR
 
 # Iterate over files
 echo "Starting"
-for f in `ls $audio_dir/*.wav`; do
-    ./runYunitator.sh $f
-done
+
+./runYunitator.sh $audio_dir
 
 echo "$0 finished running"
 
-# take all the .rttm in $audio_dir/Yunitemp/ and move them to /vagrant/data
-for sad in `ls $audio_dir/Yunitemp/*.rttm`; do
+for sad in `ls $audio_dir/feature/*.rttm`; do
     _rttm=$(basename $sad)
     rttm=$audio_dir/yunitator_${_rttm}
-    # Remove not needed SIL lines
-    # sed -i '/ SIL /d' $sad
     mv $sad $rttm
 done
 
 # simply remove hyp and feature
-rm -rf $audio_dir/Yunitemp
+rm -rf $audio_dir/feature
